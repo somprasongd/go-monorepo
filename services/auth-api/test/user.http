@@ -1,0 +1,35 @@
+@host=http://localhost:8080
+@id=d722f3f7-cd25-455b-a9b4-1e276f5df56a
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQG1haWwuY29tIiwiZXhwIjoxNjYwMTI0MjkzLCJpYXQiOjE2NjAxMjM5OTMsInJvbGUiOiJhZG1pbiIsInN1YiI6IjIxYzNhZGQwLTNiMmItNGY0Zi05NDllLWU4N2I0ODJlMjYxOSIsInVzZXJfaWQiOiI2NjQ3NDk3OC05MmRkLTRjNjctYWVjMC1jNDM5YjA5NmRlNGEifQ.7b63UpF1EoJHD0fPwbaH17jar84x9IU6u7ivT8_h7NA
+
+### create
+POST {{host}}/api/v1/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "user3@mail.com",
+  "password": "user3",
+  "role": "user"
+}
+
+### list all
+GET {{host}}/api/v1/users
+Authorization: Bearer {{token}}
+
+### get by id
+GET {{host}}/api/v1/users/{{id}}
+Authorization: Bearer {{token}}
+
+### update password
+PATCH  {{host}}/api/v1/users/{{id}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "password": "1234"
+}
+
+### delete by id
+DELETE {{host}}/api/v1/users/{{id}}
+Authorization: Bearer {{token}}

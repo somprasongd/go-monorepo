@@ -1,4 +1,4 @@
-module github.com/somprasong/goapi-common
+module github.com/somprasongd/go-monorepo/common
 
 go 1.19
 
