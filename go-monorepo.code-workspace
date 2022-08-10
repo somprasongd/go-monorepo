@@ -1,0 +1,14 @@
+{
+  "folders": [
+	{
+		"path": "common"
+	},
+	{
+		"path": "services\\auth-api"
+	},
+	{
+		"path": "services\\todo-api"
+	}
+],
+  "settings": {}
+}
