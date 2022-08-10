@@ -33,20 +33,20 @@ func main() {
 	switch command {
 	case "create":
 		if err := goose.Run("create", nil, *dir, args[1:]...); err != nil {
-			logger.Error(fmt.Sprintf("migrate run: %v", err))
+			logger.Default.Error(fmt.Sprintf("migrate run: %v", err))
 			panic(err)
 		}
 		return
 	case "fix":
 		if err := goose.Run("fix", nil, *dir); err != nil {
-			logger.Error(fmt.Sprintf("migrate run: %v", err))
+			logger.Default.Error(fmt.Sprintf("migrate run: %v", err))
 			panic(err)
 		}
 		return
 	}
 
 	appConf := config.LoadConfig()
-	logger.Info("Start migration...")
+	logger.Default.Info("Start migration...")
 
 	// initialize data sources
 	sqlDB, err := database.NewDB(appConf)
@@ -64,7 +64,7 @@ func main() {
 	}
 
 	if err := goose.Run(command, sqlDB.DB, *dir, args[1:]...); err != nil {
-		logger.Error(fmt.Sprintf("migrate run: %v", err))
+		logger.Default.Error(fmt.Sprintf("migrate run: %v", err))
 		panic(err)
 	}
 }

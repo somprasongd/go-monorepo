@@ -10,5 +10,7 @@
 		"path": "services\\todo-api"
 	}
 ],
-  "settings": {}
+	"settings": {
+		"makefile.extensionOutputFolder": "./.vscode"
+	}
 }
