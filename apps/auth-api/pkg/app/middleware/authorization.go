@@ -14,6 +14,7 @@ var (
 
 func Authorize(enforcer *casbin.Enforcer) common.HandleFunc {
 	return func(c common.HContext) error {
+		log := c.Locals("log").(logger.Interface)
 		public := c.Locals("public").(bool)
 		if public {
 			return c.Next()
@@ -25,7 +26,7 @@ func Authorize(enforcer *casbin.Enforcer) common.HandleFunc {
 		ok, err := enforcer.Enforce(role, c.Path(), c.Method())
 
 		if err != nil {
-			logger.Default.Error(err.Error())
+			log.Error(err.Error())
 			return common.ResponseError(c, ErrEnforce)
 		}
 

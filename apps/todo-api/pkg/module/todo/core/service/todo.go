@@ -5,11 +5,11 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/somprasongd/go-monorepo/common"
-	"github.com/somprasongd/go-monorepo/common/logger"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/module/todo/core/dto"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/module/todo/core/mapper"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/module/todo/core/model"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/module/todo/core/ports"
+	"gorm.io/gorm/logger"
 )
 
 var (
@@ -25,7 +25,7 @@ func NewTodoService(repo ports.TodoRepository) ports.TodoService {
 	return &todoService{repo}
 }
 
-func (s todoService) Create(userId string, form dto.NewTodoForm, reqId string) (*dto.TodoResponse, error) {
+func (s todoService) Create(userId string, form dto.NewTodoForm, log logger.Interface) (*dto.TodoResponse, error) {
 	// validate
 	if err := common.ValidateDto(form); err != nil {
 		return nil, common.NewInvalidError(err.Error())
@@ -47,7 +47,7 @@ func (s todoService) Create(userId string, form dto.NewTodoForm, reqId string) (
 	return serialized, nil
 }
 
-func (s todoService) List(userId string, page common.PagingRequest, filters dto.ListTodoFilter, reqId string) (dto.TodoResponses, *common.PagingResult, error) {
+func (s todoService) List(userId string, page common.PagingRequest, filters dto.ListTodoFilter, log logger.Interface) (dto.TodoResponses, *common.PagingResult, error) {
 	// validate
 	if err := common.ValidateDto(filters); err != nil {
 		return nil, nil, common.NewInvalidError(err.Error())
@@ -55,7 +55,7 @@ func (s todoService) List(userId string, page common.PagingRequest, filters dto.
 
 	todos, paging, err := s.repo.Find(userId, page, filters)
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, nil, common.ErrDbQuery
 	}
 
@@ -63,7 +63,7 @@ func (s todoService) List(userId string, page common.PagingRequest, filters dto.
 	return serialized, paging, nil
 }
 
-func (s todoService) Get(userId string, id string, reqId string) (*dto.TodoResponse, error) {
+func (s todoService) Get(userId string, id string, log logger.Interface) (*dto.TodoResponse, error) {
 	// validate id format
 	if err := s.validateId(id); err != nil {
 		return nil, common.ErrIdFormat
@@ -74,7 +74,7 @@ func (s todoService) Get(userId string, id string, reqId string) (*dto.TodoRespo
 		if errors.Is(err, common.ErrRecordNotFound) {
 			return nil, ErrTodoNotFoundById
 		}
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, common.ErrDbQuery
 	}
 
@@ -82,7 +82,7 @@ func (s todoService) Get(userId string, id string, reqId string) (*dto.TodoRespo
 	return serialized, nil
 }
 
-func (s todoService) UpdateStatus(userId string, id string, form dto.UpdateTodoForm, reqId string) (*dto.TodoResponse, error) {
+func (s todoService) UpdateStatus(userId string, id string, form dto.UpdateTodoForm, log logger.Interface) (*dto.TodoResponse, error) {
 	// validate id format
 	if err := s.validateId(id); err != nil {
 		return nil, common.ErrIdFormat
@@ -98,7 +98,7 @@ func (s todoService) UpdateStatus(userId string, id string, form dto.UpdateTodoF
 		if errors.Is(err, common.ErrRecordNotFound) {
 			return nil, ErrTodoNotFoundById
 		}
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, common.ErrDbUpdate
 	}
 
@@ -106,7 +106,7 @@ func (s todoService) UpdateStatus(userId string, id string, form dto.UpdateTodoF
 	return serialized, nil
 }
 
-func (s todoService) Delete(userId string, id string, reqId string) error {
+func (s todoService) Delete(userId string, id string, log logger.Interface) error {
 	// validate id format
 	if err := s.validateId(id); err != nil {
 		return common.ErrIdFormat
@@ -117,7 +117,7 @@ func (s todoService) Delete(userId string, id string, reqId string) error {
 		if errors.Is(err, common.ErrRecordNotFound) {
 			return ErrTodoNotFoundById
 		}
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return common.ErrDbDelete
 	}
 

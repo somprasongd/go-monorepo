@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/somprasongd/go-monorepo/common"
+	"github.com/somprasongd/go-monorepo/common/logger"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/user/core/dto"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/user/core/ports"
 )
@@ -26,13 +27,14 @@ func NewUserHandler(serv ports.UserService) *UserHandler {
 // @Success 201 {object} swagdto.Response{data=swagger.UserSampleData}
 // @Router /users [post]
 func (h UserHandler) CreateUser(c common.HContext) error {
+	log := c.Locals("log").(logger.Interface)
 	// แปลง JSON เป็น struct
 	form := new(dto.NewUserForm)
 	if err := c.BodyParser(form); err != nil {
 		return common.ResponseError(c, common.ErrBodyParser)
 	}
 	// ส่งต่อไปให้ service ทำงาน
-	user, err := h.serv.Create(*form, c.RequestId())
+	user, err := h.serv.Create(*form, log)
 	if err != nil {
 		// error จะถูกจัดการมาจาก service แล้ว
 		return common.ResponseError(c, err)
@@ -56,9 +58,10 @@ func (h UserHandler) CreateUser(c common.HContext) error {
 // @Success 200 {object} swagdto.ResponseWithPage{data=swagger.UserSampleListData}
 // @Router /users [get]
 func (h UserHandler) ListUser(c common.HContext) error {
+	log := c.Locals("log").(logger.Interface)
 	page := common.Paginator(c)
 
-	users, paging, err := h.serv.List(page, c.RequestId())
+	users, paging, err := h.serv.List(page, log)
 
 	if err != nil {
 		return common.ResponseError(c, err)
@@ -79,9 +82,10 @@ func (h UserHandler) ListUser(c common.HContext) error {
 // @Success 200 {object} swagdto.Response{data=swagger.UserSampleData}
 // @Router /users/{id} [get]
 func (h UserHandler) GetUser(c common.HContext) error {
+	log := c.Locals("log").(logger.Interface)
 	id := c.Params("id")
 
-	user, err := h.serv.Get(id, c.RequestId())
+	user, err := h.serv.Get(id, log)
 
 	if err != nil {
 		return common.ResponseError(c, err)
@@ -104,6 +108,7 @@ func (h UserHandler) GetUser(c common.HContext) error {
 // @Success 200 {object} swagdto.Response{data=swagger.UserSampleData}
 // @Router /users/{id} [patch]
 func (h UserHandler) UpdateUserPassword(c common.HContext) error {
+	log := c.Locals("log").(logger.Interface)
 	id := c.Params("id")
 
 	form := dto.UpdateUserPasswordForm{}
@@ -112,7 +117,7 @@ func (h UserHandler) UpdateUserPassword(c common.HContext) error {
 		return common.ResponseError(c, err)
 	}
 
-	user, err := h.serv.UpdatePassword(id, form, c.RequestId())
+	user, err := h.serv.UpdatePassword(id, form, log)
 
 	if err != nil {
 		return common.ResponseError(c, err)
@@ -133,9 +138,10 @@ func (h UserHandler) UpdateUserPassword(c common.HContext) error {
 // @Success 204
 // @Router /users/{id} [delete]
 func (h UserHandler) DeleteUser(c common.HContext) error {
+	log := c.Locals("log").(logger.Interface)
 	id := c.Params("id")
 
-	err := h.serv.Delete(id, c.RequestId())
+	err := h.serv.Delete(id, log)
 
 	if err != nil {
 		return common.ResponseError(c, err)

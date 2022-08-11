@@ -2,6 +2,7 @@ package ports
 
 import (
 	"github.com/somprasongd/go-monorepo/common"
+	"github.com/somprasongd/go-monorepo/common/logger"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/user/core/dto"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/user/core/model"
 )
@@ -18,9 +19,9 @@ type UserRepository interface {
 
 // interface สำหรับ input port
 type UserService interface {
-	Create(newUser dto.NewUserForm, reqId string) (*dto.UserResponse, error)
-	List(page common.PagingRequest, reqId string) (dto.UserResponses, *common.PagingResult, error)
-	Get(id string, reqId string) (*dto.UserResponse, error)
-	UpdatePassword(id string, updateUser dto.UpdateUserPasswordForm, reqId string) (*dto.UserResponse, error)
-	Delete(id string, reqId string) error
+	Create(newUser dto.NewUserForm, log logger.Interface) (*dto.UserResponse, error)
+	List(page common.PagingRequest, log logger.Interface) (dto.UserResponses, *common.PagingResult, error)
+	Get(id string, log logger.Interface) (*dto.UserResponse, error)
+	UpdatePassword(id string, updateUser dto.UpdateUserPasswordForm, log logger.Interface) (*dto.UserResponse, error)
+	Delete(id string, log logger.Interface) error
 }

@@ -17,7 +17,7 @@ func LoggerMiddleware(c HContext) error {
 	fileds["port"] = c.Port()
 	fileds["requestid"] = c.RequestId()
 
-	log := logger.NewWithFields(fileds)
+	log := logger.New(logger.ToFields(fileds)...)
 
 	c.Locals("log", log)
 
@@ -37,7 +37,7 @@ type TokenUser struct {
 }
 
 func EncodeUserMiddleware(c HContext) error {
-	log := c.Locals("log").(logger.Logger)
+	log := c.Locals("log").(logger.Interface)
 
 	idToken := c.Get("X-Id-Token")
 
@@ -67,7 +67,7 @@ func EncodeUserMiddleware(c HContext) error {
 }
 
 func DecodeUserMiddleware(c HContext) error {
-	log := c.Locals("log").(logger.Logger)
+	log := c.Locals("log").(logger.Interface)
 
 	idToken := c.Get("X-Id-Token")
 

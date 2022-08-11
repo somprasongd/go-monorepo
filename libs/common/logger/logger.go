@@ -5,31 +5,28 @@ import (
 
 	"go.elastic.co/ecszap"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
-type Logger interface {
-	Info(msg string)
-	InfoWithFields(msg string, fileds map[string]interface{})
-	Debug(msg string)
-	DebugWithFields(msg string, fileds map[string]interface{})
-	Error(msg string)
-	ErrorWithFields(msg string, fileds map[string]interface{})
-	Warn(msg string)
-	WarnWithFields(msg string, fileds map[string]interface{})
-	Fatal(msg string)
-	FatalWithFields(msg string, fileds map[string]interface{})
-	Panic(msg string)
-	PanicWithFields(msg string, fileds map[string]interface{})
+type Field = zapcore.Field
+
+type Interface interface {
+	Info(msg string, fileds ...Field)
+	Debug(msg string, fileds ...Field)
+	Error(msg string, fileds ...Field)
+	Warn(msg string, fileds ...Field)
+	Fatal(msg string, fileds ...Field)
+	Panic(msg string, fileds ...Field)
 }
 
 var zlog *zap.Logger
-var Default Logger
+var Default Interface
 
 func init() {
 	var err error
 
 	mode := os.Getenv("APP_MODE")
-	mode = "production"
+
 	var config zap.Config
 	if mode == "production" {
 		config = zap.NewProductionConfig()
@@ -48,12 +45,15 @@ func init() {
 	Default = newZapLogger(zlog)
 }
 
-func NewWithFields(fileds map[string]interface{}) Logger {
-	opts := []zap.Field{}
-	for k, v := range fileds {
-		opts = append(opts, zap.Any(k, v))
-	}
-
-	nlog := zlog.With(opts...)
+func New(fileds ...Field) Interface {
+	nlog := zlog.With(fileds...)
 	return newZapLogger(nlog)
+}
+
+func ToFields(source map[string]interface{}) []Field {
+	fields := []Field{}
+	for k, v := range source {
+		fields = append(fields, zap.Any(k, v))
+	}
+	return fields
 }

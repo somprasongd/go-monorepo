@@ -5,6 +5,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/somprasongd/go-monorepo/common"
+	"github.com/somprasongd/go-monorepo/common/logger"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/auth/core/dto"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/auth/core/ports"
 )
@@ -38,13 +39,14 @@ func NewAuthHandler(serv ports.AuthService) AuthHandler {
 // @Success 201
 // @Router /auth/register [post]
 func (h authHandler) Register(c common.HContext) error {
+	log := c.Locals("log").(logger.Interface)
 	// แปลง JSON เป็น struct
 	form := new(dto.RegisterForm)
 	if err := c.BodyParser(form); err != nil {
 		return common.ResponseError(c, common.ErrBodyParser)
 	}
 	// ส่งต่อไปให้ service ทำงาน
-	err := h.serv.Register(*form, c.RequestId())
+	err := h.serv.Register(*form, log)
 	if err != nil {
 		// error จะถูกจัดการมาจาก service แล้ว
 		return common.ResponseError(c, err)
@@ -65,13 +67,14 @@ func (h authHandler) Register(c common.HContext) error {
 // @Success 200 {object} swagdto.Response{data=swagger.AuthSampleData}
 // @Router /auth/login [post]
 func (h authHandler) Login(c common.HContext) error {
+	log := c.Locals("log").(logger.Interface)
 	// แปลง JSON เป็น struct
 	form := new(dto.LoginForm)
 	if err := c.BodyParser(form); err != nil {
 		return common.ResponseError(c, common.ErrBodyParser)
 	}
 	// ส่งต่อไปให้ service ทำงาน
-	auth, err := h.serv.Login(*form, c.RequestId())
+	auth, err := h.serv.Login(*form, log)
 	if err != nil {
 		// error จะถูกจัดการมาจาก service แล้ว
 		return common.ResponseError(c, err)
@@ -90,10 +93,11 @@ func (h authHandler) Login(c common.HContext) error {
 // @Success 200 {object} swagdto.Response{data=swagger.UserSampleData}
 // @Router /auth/profile [get]
 func (h authHandler) Profile(c common.HContext) error {
+	log := c.Locals("log").(logger.Interface)
 	claims := c.Locals("claims").(jwt.MapClaims)
 	email := claims["email"].(string)
 
-	user, err := h.serv.Profile(email, c.RequestId())
+	user, err := h.serv.Profile(email, log)
 
 	if err != nil {
 		return common.ResponseError(c, err)
@@ -115,6 +119,7 @@ func (h authHandler) Profile(c common.HContext) error {
 // @Success 200 {object} swagdto.Response{data=swagger.UserSampleData}
 // @Router /users/{id} [patch]
 func (h authHandler) UpdateProfile(c common.HContext) error {
+	log := c.Locals("log").(logger.Interface)
 	claims := c.Locals("claims").(jwt.MapClaims)
 	email := claims["email"].(string)
 
@@ -124,7 +129,7 @@ func (h authHandler) UpdateProfile(c common.HContext) error {
 		return common.ResponseError(c, err)
 	}
 
-	user, err := h.serv.UpdateProfile(email, form, c.RequestId())
+	user, err := h.serv.UpdateProfile(email, form, log)
 
 	if err != nil {
 		return common.ResponseError(c, err)
@@ -145,13 +150,14 @@ func (h authHandler) UpdateProfile(c common.HContext) error {
 // @Success 200 {object} swagdto.Response{data=swagger.AuthSampleData}
 // @Router /auth/refresh [post]
 func (h authHandler) RefreshToken(c common.HContext) error {
+	log := c.Locals("log").(logger.Interface)
 	// แปลง JSON เป็น struct
 	form := new(dto.RefreshForm)
 	if err := c.BodyParser(form); err != nil {
 		return common.ResponseError(c, common.ErrBodyParser)
 	}
 	// ส่งต่อไปให้ service ทำงาน
-	auth, err := h.serv.RefreshToken(*form, c.RequestId())
+	auth, err := h.serv.RefreshToken(*form, log)
 	if err != nil {
 		// error จะถูกจัดการมาจาก service แล้ว
 		return common.ResponseError(c, err)
@@ -171,13 +177,14 @@ func (h authHandler) RefreshToken(c common.HContext) error {
 // @Success 204
 // @Router /auth/revoke [post]
 func (h authHandler) RevokeToken(c common.HContext) error {
+	log := c.Locals("log").(logger.Interface)
 	// แปลง JSON เป็น struct
 	form := new(dto.RefreshForm)
 	if err := c.BodyParser(form); err != nil {
 		return common.ResponseError(c, common.ErrBodyParser)
 	}
 	// ส่งต่อไปให้ service ทำงาน
-	err := h.serv.RevokeToken(*form, c.RequestId())
+	err := h.serv.RevokeToken(*form, log)
 	if err != nil {
 		// error จะถูกจัดการมาจาก service แล้ว
 		return common.ResponseError(c, err)

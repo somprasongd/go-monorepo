@@ -17,6 +17,8 @@ var (
 
 func Authentication(secretKey string, excludeList map[string][]string) common.HandleFunc {
 	return func(c common.HContext) error {
+		log := c.Locals("log").(logger.Interface)
+
 		public := false
 
 		if methods, ok := excludeList[c.Path()]; ok {
@@ -46,7 +48,7 @@ func Authentication(secretKey string, excludeList map[string][]string) common.Ha
 			claims, err := util.ValidateToken(token, secretKey)
 
 			if err != nil {
-				logger.Default.Error(err.Error())
+				log.Error(err.Error())
 				return common.ResponseError(c, ErrInvalidToken)
 			}
 
@@ -61,13 +63,15 @@ func Authentication(secretKey string, excludeList map[string][]string) common.Ha
 
 func AuthenticationCasbin(secretKey string, enforcer *casbin.Enforcer) common.HandleFunc {
 	return func(c common.HContext) error {
+		log := c.Locals("log").(logger.Interface)
+
 		public := false
 
 		enforceContext := casbin.NewEnforceContext("2")
 
 		public, err := enforcer.Enforce(enforceContext, c.Path(), c.Method())
 		if err != nil {
-			logger.Default.Error(err.Error())
+			log.Error(err.Error())
 			return common.ResponseError(c, ErrEnforce)
 		}
 
@@ -94,7 +98,7 @@ func AuthenticationCasbin(secretKey string, enforcer *casbin.Enforcer) common.Ha
 			claims, err := util.ValidateToken(token, secretKey)
 
 			if err != nil {
-				logger.Default.Debug(err.Error())
+				log.Debug(err.Error())
 				return common.ResponseError(c, ErrInvalidToken)
 			}
 

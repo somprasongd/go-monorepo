@@ -27,7 +27,7 @@ func NewUserService(repo ports.UserRepository) ports.UserService {
 	return &userService{repo}
 }
 
-func (s userService) Create(form dto.NewUserForm, reqId string) (*dto.UserResponse, error) {
+func (s userService) Create(form dto.NewUserForm, log logger.Interface) (*dto.UserResponse, error) {
 	// validate
 	if err := common.ValidateDto(form); err != nil {
 		return nil, common.NewInvalidError(err.Error())
@@ -36,7 +36,7 @@ func (s userService) Create(form dto.NewUserForm, reqId string) (*dto.UserRespon
 	u, err := s.repo.FindByEmail(form.Email)
 
 	if err != nil && !errors.Is(err, common.ErrRecordNotFound) {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, common.ErrDbQuery
 	}
 
@@ -47,7 +47,7 @@ func (s userService) Create(form dto.NewUserForm, reqId string) (*dto.UserRespon
 	user := mapper.CreateUserFormToModel(form)
 	hashPwd, err := util.HashPassword(form.Password)
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, ErrHashPassword
 	}
 	fmt.Println(form.Password, hashPwd)
@@ -55,7 +55,7 @@ func (s userService) Create(form dto.NewUserForm, reqId string) (*dto.UserRespon
 
 	err = s.repo.Create(user)
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, common.ErrDbInsert
 	}
 
@@ -64,10 +64,10 @@ func (s userService) Create(form dto.NewUserForm, reqId string) (*dto.UserRespon
 	return serialized, nil
 }
 
-func (s userService) List(page common.PagingRequest, reqId string) (dto.UserResponses, *common.PagingResult, error) {
+func (s userService) List(page common.PagingRequest, log logger.Interface) (dto.UserResponses, *common.PagingResult, error) {
 	users, paging, err := s.repo.Find(page)
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, nil, common.ErrDbQuery
 	}
 
@@ -75,7 +75,7 @@ func (s userService) List(page common.PagingRequest, reqId string) (dto.UserResp
 	return serialized, paging, nil
 }
 
-func (s userService) Get(id string, reqId string) (*dto.UserResponse, error) {
+func (s userService) Get(id string, log logger.Interface) (*dto.UserResponse, error) {
 	// validate id format
 	if err := s.validateId(id); err != nil {
 		return nil, common.ErrIdFormat
@@ -86,7 +86,7 @@ func (s userService) Get(id string, reqId string) (*dto.UserResponse, error) {
 		if errors.Is(err, common.ErrRecordNotFound) {
 			return nil, ErrUserNotFoundById
 		}
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, common.ErrDbQuery
 	}
 
@@ -94,7 +94,7 @@ func (s userService) Get(id string, reqId string) (*dto.UserResponse, error) {
 	return serialized, nil
 }
 
-func (s userService) UpdatePassword(id string, form dto.UpdateUserPasswordForm, reqId string) (*dto.UserResponse, error) {
+func (s userService) UpdatePassword(id string, form dto.UpdateUserPasswordForm, log logger.Interface) (*dto.UserResponse, error) {
 	// validate id format
 	if err := s.validateId(id); err != nil {
 		return nil, common.ErrIdFormat
@@ -110,14 +110,14 @@ func (s userService) UpdatePassword(id string, form dto.UpdateUserPasswordForm, 
 		if errors.Is(err, common.ErrRecordNotFound) {
 			return nil, ErrUserNotFoundById
 		}
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, common.ErrDbQuery
 	}
 
 	hashPwd, err := util.HashPassword(form.Password)
 
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, ErrHashPassword
 	}
 
@@ -128,7 +128,7 @@ func (s userService) UpdatePassword(id string, form dto.UpdateUserPasswordForm, 
 		if errors.Is(err, common.ErrRecordNotFound) {
 			return nil, ErrUserNotFoundById
 		}
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, common.ErrDbUpdate
 	}
 
@@ -136,7 +136,7 @@ func (s userService) UpdatePassword(id string, form dto.UpdateUserPasswordForm, 
 	return serialized, nil
 }
 
-func (s userService) Delete(id string, reqId string) error {
+func (s userService) Delete(id string, log logger.Interface) error {
 	// validate id format
 	if err := s.validateId(id); err != nil {
 		return common.ErrIdFormat
@@ -147,7 +147,7 @@ func (s userService) Delete(id string, reqId string) error {
 		if errors.Is(err, common.ErrRecordNotFound) {
 			return ErrUserNotFoundById
 		}
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return common.ErrDbDelete
 	}
 

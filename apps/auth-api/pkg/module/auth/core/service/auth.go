@@ -39,7 +39,7 @@ func NewAuthService(config *config.Config, repo ports.AuthRepository, tokenRepo 
 	return &authService{config, repo, tokenRepo}
 }
 
-func (s authService) Register(form dto.RegisterForm, reqId string) error {
+func (s authService) Register(form dto.RegisterForm, log logger.Interface) error {
 	// validate
 	if err := common.ValidateDto(form); err != nil {
 		return common.NewInvalidError(err.Error())
@@ -48,7 +48,7 @@ func (s authService) Register(form dto.RegisterForm, reqId string) error {
 	u, err := s.repo.FindUserByEmail(form.Email)
 
 	if err != nil && !errors.Is(err, common.ErrRecordNotFound) {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return common.ErrDbQuery
 	}
 
@@ -59,21 +59,21 @@ func (s authService) Register(form dto.RegisterForm, reqId string) error {
 	auth := model.User{Email: form.Email}
 	hashPwd, err := util.HashPasswordArgon(form.Password)
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return ErrHashPassword
 	}
 	auth.Password = hashPwd
 
 	err = s.repo.CreateUser(&auth)
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return common.ErrDbInsert
 	}
 
 	return nil
 }
 
-func (s authService) Login(form dto.LoginForm, reqId string) (*dto.AuthResponse, error) {
+func (s authService) Login(form dto.LoginForm, log logger.Interface) (*dto.AuthResponse, error) {
 	// validate form
 	err := common.ValidateDto(form)
 	if err != nil {
@@ -105,14 +105,14 @@ func (s authService) Login(form dto.LoginForm, reqId string) (*dto.AuthResponse,
 	refreshToken, refreshExpiresAt, err := util.GenerateToken(tokenId.String(), nil, s.config.Token.RefreshSecretKey, s.config.Token.RefreshExpires)
 
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, ErrGenerateRefreshToken
 	}
 
 	// บันทึก user ลง redis
 	err = s.tokenRepo.SetToken(tokenId.String(), payload, s.config.Token.RefreshExpires)
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, ErrGenerateRefreshToken
 	}
 
@@ -120,7 +120,7 @@ func (s authService) Login(form dto.LoginForm, reqId string) (*dto.AuthResponse,
 	accessToken, accessExpiresAt, err := util.GenerateToken(tokenId.String(), payload, s.config.Token.AccessSecretKey, s.config.Token.AccessExpires)
 
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, ErrGenerateAccessToken
 	}
 
@@ -139,7 +139,7 @@ func (s authService) Login(form dto.LoginForm, reqId string) (*dto.AuthResponse,
 	return &serialized, nil
 }
 
-func (s authService) Profile(email string, reqId string) (*dto.UserInfo, error) {
+func (s authService) Profile(email string, log logger.Interface) (*dto.UserInfo, error) {
 	// validate
 	if email == "" {
 		return nil, ErrUserNotfound
@@ -151,7 +151,7 @@ func (s authService) Profile(email string, reqId string) (*dto.UserInfo, error) 
 		if errors.Is(err, common.ErrRecordNotFound) {
 			return nil, ErrUserNotfound
 		}
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, common.ErrDbQuery
 	}
 
@@ -164,7 +164,7 @@ func (s authService) Profile(email string, reqId string) (*dto.UserInfo, error) 
 	return &serialized, nil
 }
 
-func (s authService) UpdateProfile(email string, form dto.UpdateProfileForm, reqId string) (*dto.UserInfo, error) {
+func (s authService) UpdateProfile(email string, form dto.UpdateProfileForm, log logger.Interface) (*dto.UserInfo, error) {
 	// validate
 	err := common.ValidateDto(form)
 	if err != nil {
@@ -176,7 +176,7 @@ func (s authService) UpdateProfile(email string, form dto.UpdateProfileForm, req
 		if errors.Is(err, common.ErrRecordNotFound) {
 			return nil, ErrUserNotfound
 		}
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, common.ErrDbQuery
 	}
 
@@ -189,7 +189,7 @@ func (s authService) UpdateProfile(email string, form dto.UpdateProfileForm, req
 	hashPwd, err := util.HashPassword(form.PasswordNew)
 
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, ErrHashPassword
 	}
 
@@ -197,7 +197,7 @@ func (s authService) UpdateProfile(email string, form dto.UpdateProfileForm, req
 
 	err = s.repo.SaveProfile(user)
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, common.ErrDbUpdate
 	}
 
@@ -210,7 +210,7 @@ func (s authService) UpdateProfile(email string, form dto.UpdateProfileForm, req
 	return &serialized, nil
 }
 
-func (s authService) RefreshToken(form dto.RefreshForm, reqId string) (*dto.AuthResponse, error) {
+func (s authService) RefreshToken(form dto.RefreshForm, log logger.Interface) (*dto.AuthResponse, error) {
 	// validate form
 	err := common.ValidateDto(form)
 	if err != nil {
@@ -221,7 +221,7 @@ func (s authService) RefreshToken(form dto.RefreshForm, reqId string) (*dto.Auth
 	cliams, err := util.ValidateToken(form.Token, s.config.Token.RefreshSecretKey)
 
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, ErrInvalidRefreshToken
 	}
 
@@ -230,7 +230,7 @@ func (s authService) RefreshToken(form dto.RefreshForm, reqId string) (*dto.Auth
 	encodedUser, err := s.tokenRepo.GetToken(tokenId)
 
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, ErrInvalidRefreshToken
 	}
 
@@ -243,7 +243,7 @@ func (s authService) RefreshToken(form dto.RefreshForm, reqId string) (*dto.Auth
 	payload := map[string]any{}
 	err = json.Unmarshal([]byte(encodedUser), &payload)
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, ErrUnmarshalPayload
 	}
 
@@ -254,14 +254,14 @@ func (s authService) RefreshToken(form dto.RefreshForm, reqId string) (*dto.Auth
 	refreshToken, refreshExpiresAt, err := util.GenerateToken(newTkId.String(), nil, s.config.Token.RefreshSecretKey, s.config.Token.RefreshExpires)
 
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, ErrGenerateRefreshToken
 	}
 
 	// บันทึก user ลง redis
 	err = s.tokenRepo.SetToken(newTkId.String(), payload, s.config.Token.RefreshExpires)
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, ErrGenerateRefreshToken
 	}
 	// ลบ tokenId เดิม ป้องกันใช้ซ้ำ
@@ -271,7 +271,7 @@ func (s authService) RefreshToken(form dto.RefreshForm, reqId string) (*dto.Auth
 	accessToken, accessExpiresAt, err := util.GenerateToken(newTkId.String(), payload, s.config.Token.AccessSecretKey, s.config.Token.AccessExpires)
 
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return nil, ErrGenerateAccessToken
 	}
 
@@ -285,7 +285,7 @@ func (s authService) RefreshToken(form dto.RefreshForm, reqId string) (*dto.Auth
 	return &serialized, nil
 }
 
-func (s authService) RevokeToken(form dto.RefreshForm, reqId string) error {
+func (s authService) RevokeToken(form dto.RefreshForm, log logger.Interface) error {
 	// validate form
 	err := common.ValidateDto(form)
 	if err != nil {
@@ -296,7 +296,7 @@ func (s authService) RevokeToken(form dto.RefreshForm, reqId string) error {
 	cliams, err := util.ValidateToken(form.Token, s.config.Token.RefreshSecretKey)
 
 	if err != nil {
-		logger.Default.Error(err.Error())
+		log.Error(err.Error())
 		return ErrInvalidRefreshToken
 	}
 
