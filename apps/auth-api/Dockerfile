@@ -1,10 +1,11 @@
-FROM golang:1.18-alpine AS build
-WORKDIR /app
-COPY go.mod go.sum ./
+FROM golang:1.19-alpine AS build
+WORKDIR /apps/auth
+COPY apps/auth-api/go.mod apps/auth-api/go.sum ./
+COPY libs/common /libs/common
 RUN go mod download
-COPY config ./config
-COPY cmd ./cmd
-COPY pkg ./pkg
+COPY apps/auth-api/config ./config
+COPY apps/auth-api/cmd ./cmd
+COPY apps/auth-api/pkg ./pkg
 ENV GOARCH=amd64
 RUN go build -o /go/bin/api cmd/api/main.go \
     && go build -o /go/bin/migrate cmd/migrate/main.go
@@ -18,8 +19,8 @@ EXPOSE 8080
 ENV TZ=Asia/Bangkok
 ENV APP_MODE=production
 
-COPY config /app/config
-COPY migrations /app/migrations
+COPY apps/auth-api/config /app/config
+COPY apps/auth-api/migrations /app/migrations
 COPY --from=build /go/bin/api /app/api
 COPY --from=build /go/bin/migrate /app/migrate
 

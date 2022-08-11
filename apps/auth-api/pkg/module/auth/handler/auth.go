@@ -90,7 +90,7 @@ func (h authHandler) Login(c common.HContext) error {
 // @Param Authorization header string true "Bearer"
 // @Failure 401 {object} swagdto.Error401
 // @Failure 500 {object} swagdto.Error500
-// @Success 200 {object} swagdto.Response{data=swagger.UserSampleData}
+// @Success 200 {object} swagdto.Response{data=swagger.ProfileSampleData}
 // @Router /auth/profile [get]
 func (h authHandler) Profile(c common.HContext) error {
 	log := c.Locals("log").(logger.Interface)
@@ -111,13 +111,13 @@ func (h authHandler) Profile(c common.HContext) error {
 // @Produce json
 // @Tags User
 // @Param Authorization header string true "Bearer"
-// @Param user body swagger.UpdateProfileForm true "User Password"
+// @Param user body dto.UpdateProfileForm true "User Password"
 // @Failure 400 {object} swagdto.Error400
 // @Failure 404 {object} swagdto.Error404
-// @Failure 422 {object} swagdto.Error422{error=swagger.ErrUpdateSampleData}
+// @Failure 422 {object} swagdto.Error422{error=swagger.ErrUpdateProfileSampleData}
 // @Failure 500 {object} swagdto.Error500
-// @Success 200 {object} swagdto.Response{data=swagger.UserSampleData}
-// @Router /users/{id} [patch]
+// @Success 200 {object} swagdto.Response{data=swagger.ProfileSampleData}
+// @Router /auth/profile [patch]
 func (h authHandler) UpdateProfile(c common.HContext) error {
 	log := c.Locals("log").(logger.Interface)
 	claims := c.Locals("claims").(jwt.MapClaims)
@@ -143,7 +143,7 @@ func (h authHandler) UpdateProfile(c common.HContext) error {
 // @Tags Auth
 // @Accept  json
 // @Produce  json
-// @Param user body swagger.RefreshForm true "Refresh Token Data"
+// @Param user body dto.RefreshForm true "Refresh Token Data"
 // @Failure 401 {object} swagdto.Error401
 // @Failure 422 {object} swagdto.Error422{error=swagger.ErrLoginSampleData}
 // @Failure 500 {object} swagdto.Error500
@@ -170,7 +170,7 @@ func (h authHandler) RefreshToken(c common.HContext) error {
 // @Description Remove token id in redis
 // @Tags Auth
 // @Accept  json
-// @Param user body swagger.RefreshForm true "Refresh Token Data"
+// @Param user body dto.RefreshForm true "Refresh Token Data"
 // @Failure 401 {object} swagdto.Error401
 // @Failure 422 {object} swagdto.Error422{error=swagger.ErrLoginSampleData}
 // @Failure 500 {object} swagdto.Error500
@@ -196,8 +196,6 @@ func (h authHandler) RevokeToken(c common.HContext) error {
 // @Summary Verify Access Token
 // @Description Verify Access Token and get user info from the token
 // @Tags Auth
-// @Accept  json
-// @Param user body swagger.RefreshForm true "Refresh Token Data"
 // @Failure 401 {object} swagdto.Error401
 // @Failure 422 {object} swagdto.Error422{error=swagger.ErrLoginSampleData}
 // @Failure 500 {object} swagdto.Error500

@@ -1,9 +1,10 @@
-FROM golang:1.18-alpine AS build
-WORKDIR /app
-COPY go.mod go.sum ./
+FROM golang:1.19-alpine AS build
+WORKDIR /apps/todo
+COPY apps/todo-api/go.mod apps/todo-api/go.sum ./
+COPY libs/common /libs/common
 RUN go mod download
-COPY cmd ./cmd
-COPY pkg ./pkg
+COPY apps/todo-api/cmd ./cmd
+COPY apps/todo-api/pkg ./pkg
 ENV GOARCH=amd64
 RUN go build -o /go/bin/api cmd/api/main.go \
     && go build -o /go/bin/migrate cmd/migrate/main.go
@@ -17,7 +18,7 @@ EXPOSE 8080
 ENV TZ=Asia/Bangkok
 ENV APP_MODE=production
 
-COPY migrations /app/migrations
+COPY apps/todo-api/migrations /app/migrations
 COPY --from=build /go/bin/api /app/api
 COPY --from=build /go/bin/migrate /app/migrate
 

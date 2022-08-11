@@ -3,6 +3,7 @@ package common
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -12,10 +13,23 @@ import (
 func LoggerMiddleware(c HContext) error {
 	start := time.Now()
 
-	fileds := map[string]interface{}{}
-	fileds["ip"] = c.IP()
-	fileds["port"] = c.Port()
-	fileds["requestid"] = c.RequestId()
+	appName := os.Getenv("APP_NAME")
+
+	if len(appName) == 0 {
+		appName = "goapi"
+	}
+
+	fileds := map[string]interface{}{
+		"app":       appName,
+		"domain":    c.Domain(),
+		"requestId": c.RequestId(),
+		"userAgent": c.Get("User-Agent"),
+		"ip":        c.ClientIP(),
+		"method":    c.Method(),
+		"traceId":   c.Get("X-B3-Traceid"),
+		"spanId":    c.Get("X-B3-Spanid"),
+		"uri":       c.Path(),
+	}
 
 	log := logger.New(logger.ToFields(fileds)...)
 
@@ -23,9 +37,13 @@ func LoggerMiddleware(c HContext) error {
 
 	err := c.Next()
 
-	// "status - method path (duration)"
-	msg := fmt.Sprintf("%v - %v %v (%v)", c.StatusCode(), c.Method(), c.Path(), time.Since(start))
-	log.Info(msg)
+	// "status - method path (latency)"
+	// msg := fmt.Sprintf("%v - %v %v (%v)", c.StatusCode(), c.Method(), c.Path(), time.Since(start))
+
+	fileds["status"] = c.StatusCode()
+	fileds["latency"] = time.Since(start)
+
+	logger.New(logger.ToFields(fileds)...).Info("")
 
 	return err
 }

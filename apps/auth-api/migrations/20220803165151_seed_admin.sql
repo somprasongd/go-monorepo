@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 -- user admin password admin
-INSERT INTO "users" ("email","password","role") VALUES ('admin@mail.com','$2a$14$rgdCRN582Nu5rKgfQA/TiOVb.YIx.SzZjE6NZW8AErhcIIajsnZLy','admin');
+INSERT INTO "users" ("email","password","role") VALUES ('admin@mail.com','$argon2id$v=19$m=65536,t=3,p=4$bScd+0u6Msk7aVcYHuMj6w$ui/+Ylw4geyMrsbZfJWI+vuSmjLGDu9Onkjvnonzj6M','admin');
 -- +goose StatementEnd
 
 -- +goose Down

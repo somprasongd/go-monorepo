@@ -5,11 +5,11 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/somprasongd/go-monorepo/common"
+	"github.com/somprasongd/go-monorepo/common/logger"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/module/todo/core/dto"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/module/todo/core/mapper"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/module/todo/core/model"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/module/todo/core/ports"
-	"gorm.io/gorm/logger"
 )
 
 var (

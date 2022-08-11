@@ -31,12 +31,20 @@ func (c *fiberContext) RequestId() string {
 	return c.Ctx.GetRespHeader("X-Request-ID")
 }
 
-func (c *fiberContext) IP() string {
-	return c.Ctx.IP()
+func (c *fiberContext) ClientIP() string {
+	ip := c.Get("X-Real-IP")
+	if len(ip) == 0 {
+		ip = c.Ctx.IP()
+	}
+	return ip
 }
 
-func (c *fiberContext) Port() string {
-	return c.Ctx.Port()
+func (c *fiberContext) Domain() string {
+	domain := c.Get("X-Forwarded-Host")
+	if len(domain) == 0 {
+		domain = c.Ctx.IP()
+	}
+	return domain
 }
 
 func (c *fiberContext) Method() string {

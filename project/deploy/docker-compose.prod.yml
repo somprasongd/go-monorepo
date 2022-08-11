@@ -6,7 +6,11 @@ services:
       interval: 15s
       timeout: 10s
       retries: 3
+    networks:
+      - backend
   db:
+    ports:
+      - 5434:5432
     logging:
       options:
         max-size: 10m
@@ -16,9 +20,28 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - backend
+
+  gateway:
+    container_name: gateway
+    image: nginx:latest
+    volumes:
+      - ./config/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - '${GATEWAY_PORT:-8800}:80'
+    restart: always
+    depends_on:
+      auth-api:
+        condition: service_started
+      todo-api:
+        condition: service_started
+    networks:
+      - webproxy
+      - frontend
 
   migrate-auth:
-    image: somprasongd/go-monorepo/auth-api:0.0.1
+    image: somprasongd/go-monorepo/auth:0.0.1
     command: /app/migrate up
     environment:
       - TZ=Asia/Bangkok
@@ -29,13 +52,21 @@ services:
       - DB_PASSWORD=S3cretp@ssw0rd
       - DB_DATABASE=users
       - DB_SSLMODE=disable
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - TOKEN_ACCESS_SECRET=accsess_s3cret
+      - TOKEN_ACCESS_EXPIRES=15m
+      - TOKEN_REFRESH_SECRET=refresh_s3cret
+      - TOKEN_REFRESH_EXPIRES=720h
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - backend
 
   auth-api:
     container_name: auth-api
-    image: somprasongd/go-monorepo/auth-api:0.0.1
+    image: somprasongd/go-monorepo/auth:0.0.1
     restart: always
     ports:
       - 8080:8080
@@ -50,6 +81,10 @@ services:
       - DB_SSLMODE=disable
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - TOKEN_ACCESS_SECRET=accsess_s3cret
+      - TOKEN_ACCESS_EXPIRES=15m
+      - TOKEN_REFRESH_SECRET=refresh_s3cret
+      - TOKEN_REFRESH_EXPIRES=720h
     depends_on:
       redis:
         condition: service_healthy
@@ -57,9 +92,12 @@ services:
         condition: service_healthy
       migrate-auth:
         condition: service_started
+    networks:
+      - frontend
+      - backend
 
   migrate-todo:
-    image: somprasongd/go-monorepo/todo-api:0.0.1
+    image: somprasongd/go-monorepo/todo:0.0.1
     command: /app/migrate up
     environment:
       - TZ=Asia/Bangkok
@@ -73,10 +111,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - backend
 
   todo-api:
     container_name: todo-api
-    image: somprasongd/go-monorepo/todo-api:0.0.1
+    image: somprasongd/go-monorepo/todo:0.0.1
     restart: always
     ports:
       - 8081:8080
@@ -94,3 +134,12 @@ services:
         condition: service_healthy
       migrate-todo:
         condition: service_started
+    networks:
+      - frontend
+      - backend
+
+networks:
+  webproxy:
+    external: true
+  frontend:
+  backend:

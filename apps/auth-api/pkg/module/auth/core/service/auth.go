@@ -24,7 +24,7 @@ var (
 	ErrNoToken              = common.NewUnauthorizedError("the token is required")
 	ErrInvalidToken         = common.NewUnauthorizedError("the token is invalid")
 	ErrUserNotfound         = common.NewUnauthorizedError("user not found")
-	ErrUserPasswordNotMatch = common.NewBadRequestError("password is not macth")
+	ErrUserPasswordNotMatch = common.NewBadRequestError("password is not match")
 	ErrInvalidRefreshToken  = common.NewUnauthorizedError("the refresh token is invalid or expired")
 	ErrUnmarshalPayload     = common.NewUnexpectedError("error occurred while convert user data")
 )

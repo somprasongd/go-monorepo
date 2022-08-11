@@ -15,9 +15,8 @@ type HContext interface {
 	RequestId() string
 
 	// Request
-
-	IP() string
-	Port() string
+	ClientIP() string
+	Domain() string
 	// Return HTTP method of the request.
 	Method() string
 	// Return path part of the request URL.

@@ -1,45 +1,45 @@
-@host=http://localhost:8080
+@host=http://localhost:8800
 @id=b534ca64-be45-421a-af43-e5dfc38daa3d
 @id-token=eyJ1c2VyX2lkIjoiNjk4YmM2OWMtMGFiMS00YzQyLWFhODctMTY0MWY3MTY3YjQ2IiwiaWRlbnRpdHkiOiJ1c2VyQG1haWwuY29tIiwicm9sZSI6InVzZXIifQ==
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAbWFpbC5jb20iLCJleHAiOjE2NjAyMTIyMzEsImlhdCI6MTY2MDIxMTMzMSwicm9sZSI6InVzZXIiLCJzdWIiOiIzZDEwYmJkYy1jM2VmLTQwNzYtODQ4OC04YzIwMTIyNDg5ZWQiLCJ1c2VyX2lkIjoiM2EzYTM0MTYtMDM3NS00ZTFjLWFlMzQtNjU2NjdiZmI2ZmMyIn0.xUQajDBqnsd8u8oy_OLIvW20KThR1CzxJVLXWe-MpkI
 
 ### create
-POST {{host}}/api/v1/todos
+POST {{host}}/api/v1/todos/
+Authorization: Bearer {{token}}
 Content-Type: application/json
-X-Request-Id: ABC
-X-Id-Token: {{id-token}}
 
 {
   "text": "abc"
 }
 
 ### list all
-GET {{host}}/api/v1/todos
-X-Id-Token: {{id-token}}
+GET {{host}}/api/v1/todos/
+Authorization: Bearer {{token}}
 
 ### list with filter
-GET {{host}}/api/v1/todos?term=1&completed=0
-X-Id-Token: {{id-token}}
+GET {{host}}/api/v1/todos/?term=&completed=0
+Authorization: Bearer {{token}}
 
 ### list all completed
 GET {{host}}/api/v1/todos?completed=1
-X-Id-Token: {{id-token}}
+Authorization: Bearer {{token}}
 
 ### list all uncompleted
 GET {{host}}/api/v1/todos?completed=0
-X-Id-Token: {{id-token}}
+Authorization: Bearer {{token}}
 
 ### get by id
 GET {{host}}/api/v1/todos/{{id}}
-X-Id-Token: {{id-token}}
+Authorization: Bearer {{token}}
 
 ### update status
 PATCH  {{host}}/api/v1/todos/{{id}}
 Content-Type: application/json
-X-Id-Token: {{id-token}}
+Authorization: Bearer {{token}}
 
 {
   "completed": true
 }
 ### delete by id
 DELETE {{host}}/api/v1/todos/{{id}}
-X-Id-Token: {{id-token}}
+Authorization: Bearer {{token}}

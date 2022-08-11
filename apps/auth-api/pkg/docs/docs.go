@@ -123,7 +123,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/swagger.UserInfoSampleData"
+                                            "$ref": "#/definitions/swagger.ProfileSampleData"
                                         }
                                     }
                                 }
@@ -134,6 +134,166 @@ const docTemplate = `{
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/swagdto.Error401"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/swagdto.Error500"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update a user password",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update a user password",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "User Password",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateProfileForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/swagdto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/swagger.ProfileSampleData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/swagdto.Error400"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/swagdto.Error404"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/swagdto.Error422"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/definitions/swagger.ErrUpdateProfileSampleData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/swagdto.Error500"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "description": "Generate new access and refresh token from refresh token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Refresh Token",
+                "parameters": [
+                    {
+                        "description": "Refresh Token Data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RefreshForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/swagdto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/swagger.AuthSampleData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/swagdto.Error401"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/swagdto.Error422"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/definitions/swagger.ErrLoginSampleData"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "500": {
@@ -171,7 +331,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": ""
+                        "description": "Created"
                     },
                     "422": {
                         "description": "Unprocessable Entity",
@@ -185,6 +345,114 @@ const docTemplate = `{
                                     "properties": {
                                         "error": {
                                             "$ref": "#/definitions/swagger.ErrRegisterSampleData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/swagdto.Error500"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/revoke": {
+            "post": {
+                "description": "Remove token id in redis",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Revoke Token",
+                "parameters": [
+                    {
+                        "description": "Refresh Token Data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RefreshForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/swagdto.Error401"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/swagdto.Error422"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/definitions/swagger.ErrLoginSampleData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/swagdto.Error500"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/verify": {
+            "get": {
+                "description": "Verify Access Token and get user info from the token",
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Verify Access Token",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "headers": {
+                            "X-Id-Token": {
+                                "type": "string",
+                                "description": "id-token"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/swagdto.Error401"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/swagdto.Error422"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/definitions/swagger.ErrLoginSampleData"
                                         }
                                     }
                                 }
@@ -214,6 +482,13 @@ const docTemplate = `{
                 ],
                 "summary": "List all existing users",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "Go to a specific page number. Start with 1",
@@ -279,6 +554,13 @@ const docTemplate = `{
                 ],
                 "summary": "Add a new user",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "User Data",
                         "name": "user",
@@ -348,6 +630,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "User ID",
                         "name": "id",
                         "in": "path",
@@ -405,6 +694,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "User ID",
                         "name": "id",
                         "in": "path",
@@ -413,7 +709,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -445,6 +741,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update a user password",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "User ID",
@@ -522,6 +825,54 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.RefreshForm": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateProfileForm": {
+            "type": "object",
+            "properties": {
+                "password_new": {
+                    "type": "string"
+                },
+                "password_old": {
+                    "type": "string"
+                }
+            }
+        },
+        "pkg_module_auth_swagger.ErrorDetailUpdate": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "password_old field is required"
+                },
+                "target": {
+                    "type": "string",
+                    "example": "password_old"
+                }
+            }
+        },
+        "pkg_module_user_swagger.ErrorDetailUpdate": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "password_old field is required"
+                },
+                "target": {
+                    "type": "string",
+                    "example": "password_old"
+                }
+            }
+        },
         "swagdto.Error400": {
             "type": "object",
             "properties": {
@@ -838,6 +1189,25 @@ const docTemplate = `{
                 }
             }
         },
+        "swagger.ErrUpdateProfileSampleData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "422"
+                },
+                "details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/pkg_module_auth_swagger.ErrorDetailUpdate"
+                    }
+                },
+                "message": {
+                    "type": "string",
+                    "example": "invalid data see details"
+                }
+            }
+        },
         "swagger.ErrUpdateSampleData": {
             "type": "object",
             "properties": {
@@ -848,7 +1218,7 @@ const docTemplate = `{
                 "details": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/swagger.ErrorDetailUpdate"
+                        "$ref": "#/definitions/pkg_module_user_swagger.ErrorDetailUpdate"
                     }
                 },
                 "message": {
@@ -896,19 +1266,6 @@ const docTemplate = `{
                 }
             }
         },
-        "swagger.ErrorDetailUpdate": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "password_old field is required"
-                },
-                "target": {
-                    "type": "string",
-                    "example": "password_old"
-                }
-            }
-        },
         "swagger.LoginForm": {
             "type": "object",
             "properties": {
@@ -921,6 +1278,14 @@ const docTemplate = `{
                     "description": "Required: true",
                     "type": "string",
                     "example": "password1234"
+                }
+            }
+        },
+        "swagger.ProfileSampleData": {
+            "type": "object",
+            "properties": {
+                "user": {
+                    "$ref": "#/definitions/swagger.UserInfo"
                 }
             }
         },
@@ -968,14 +1333,6 @@ const docTemplate = `{
                 "role": {
                     "type": "string",
                     "example": "user"
-                }
-            }
-        },
-        "swagger.UserInfoSampleData": {
-            "type": "object",
-            "properties": {
-                "user": {
-                    "$ref": "#/definitions/swagger.UserInfo"
                 }
             }
         },
