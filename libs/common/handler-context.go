@@ -16,6 +16,8 @@ type HContext interface {
 
 	// Request
 
+	IP() string
+	Port() string
 	// Return HTTP method of the request.
 	Method() string
 	// Return path part of the request URL.
@@ -39,4 +41,5 @@ type HContext interface {
 	// Response
 	SendStatus(status int) error
 	SendJSON(status int, data interface{}) error
+	StatusCode() int
 }

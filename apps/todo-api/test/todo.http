@@ -1,10 +1,12 @@
 @host=http://localhost:8080
-@id=634e5c1f-57f5-4e97-baad-fdcc3b54d48e
+@id=b534ca64-be45-421a-af43-e5dfc38daa3d
+@id-token=eyJ1c2VyX2lkIjoiNjk4YmM2OWMtMGFiMS00YzQyLWFhODctMTY0MWY3MTY3YjQ2IiwiaWRlbnRpdHkiOiJ1c2VyQG1haWwuY29tIiwicm9sZSI6InVzZXIifQ==
 
 ### create
 POST {{host}}/api/v1/todos
 Content-Type: application/json
-X-Request-ID: ABC
+X-Request-Id: ABC
+X-Id-Token: {{id-token}}
 
 {
   "text": "abc"
@@ -12,25 +14,32 @@ X-Request-ID: ABC
 
 ### list all
 GET {{host}}/api/v1/todos
+X-Id-Token: {{id-token}}
 
 ### list with filter
 GET {{host}}/api/v1/todos?term=1&completed=0
+X-Id-Token: {{id-token}}
 
 ### list all completed
 GET {{host}}/api/v1/todos?completed=1
+X-Id-Token: {{id-token}}
 
 ### list all uncompleted
 GET {{host}}/api/v1/todos?completed=0
+X-Id-Token: {{id-token}}
 
 ### get by id
 GET {{host}}/api/v1/todos/{{id}}
+X-Id-Token: {{id-token}}
 
 ### update status
 PATCH  {{host}}/api/v1/todos/{{id}}
 Content-Type: application/json
+X-Id-Token: {{id-token}}
 
 {
   "completed": true
 }
 ### delete by id
 DELETE {{host}}/api/v1/todos/{{id}}
+X-Id-Token: {{id-token}}

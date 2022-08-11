@@ -10,6 +10,7 @@ type Todo struct {
 	ID        uuid.UUID  `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 	Text      string     `gorm:"not null"`
 	Status    TodoStatus `sql:"todo_status" gorm:"default:'open'"`
+	UserId    uuid.UUID  `gorm:"type:uuid"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

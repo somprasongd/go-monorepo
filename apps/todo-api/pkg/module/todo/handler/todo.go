@@ -25,13 +25,14 @@ func NewTodoHandler(serv ports.TodoService) *TodoHandler {
 // @Success 201 {object} swagdto.Response{data=swagger.TodoSampleData}
 // @Router /todos [post]
 func (h TodoHandler) CreateTodo(c common.HContext) error {
+	user := c.Locals("user").(common.TokenUser)
 	// แปลง JSON เป็น struct
 	form := new(dto.NewTodoForm)
 	if err := c.BodyParser(form); err != nil {
 		return common.ResponseError(c, common.ErrBodyParser)
 	}
 	// ส่งต่อไปให้ service ทำงาน
-	todo, err := h.serv.Create(*form, c.RequestId())
+	todo, err := h.serv.Create(user.UserId, *form, c.RequestId())
 	if err != nil {
 		// error จะถูกจัดการมาจาก service แล้ว
 		return common.ResponseError(c, err)
@@ -56,6 +57,7 @@ func (h TodoHandler) CreateTodo(c common.HContext) error {
 // @Success 200 {object} swagdto.ResponseWithPage{data=swagger.TodoSampleListData}
 // @Router /todos [get]
 func (h TodoHandler) ListTodo(c common.HContext) error {
+	user := c.Locals("user").(common.TokenUser)
 	filters := dto.ListTodoFilter{}
 	if err := c.QueryParser(&filters); err != nil {
 		return common.ResponseError(c, common.ErrQueryParser)
@@ -63,7 +65,7 @@ func (h TodoHandler) ListTodo(c common.HContext) error {
 
 	page := common.Paginator(c)
 
-	todos, paging, err := h.serv.List(page, filters, c.RequestId())
+	todos, paging, err := h.serv.List(user.UserId, page, filters, c.RequestId())
 
 	if err != nil {
 		return common.ResponseError(c, err)
@@ -83,9 +85,10 @@ func (h TodoHandler) ListTodo(c common.HContext) error {
 // @Success 200 {object} swagdto.Response{data=swagger.TodoSampleData}
 // @Router /todos/{id} [get]
 func (h TodoHandler) GetTodo(c common.HContext) error {
+	user := c.Locals("user").(common.TokenUser)
 	id := c.Params("id")
 
-	todo, err := h.serv.Get(id, c.RequestId())
+	todo, err := h.serv.Get(user.UserId, id, c.RequestId())
 
 	if err != nil {
 		return common.ResponseError(c, err)
@@ -107,6 +110,7 @@ func (h TodoHandler) GetTodo(c common.HContext) error {
 // @Success 200 {object} swagdto.Response{data=swagger.TodoSampleData}
 // @Router /todos/{id} [patch]
 func (h TodoHandler) UpdateTodoStatus(c common.HContext) error {
+	user := c.Locals("user").(common.TokenUser)
 	id := c.Params("id")
 
 	form := dto.UpdateTodoForm{}
@@ -115,7 +119,7 @@ func (h TodoHandler) UpdateTodoStatus(c common.HContext) error {
 		return common.ResponseError(c, err)
 	}
 
-	todo, err := h.serv.UpdateStatus(id, form, c.RequestId())
+	todo, err := h.serv.UpdateStatus(user.UserId, id, form, c.RequestId())
 
 	if err != nil {
 		return common.ResponseError(c, err)
@@ -135,9 +139,10 @@ func (h TodoHandler) UpdateTodoStatus(c common.HContext) error {
 // @Success 204
 // @Router /todos/{id} [delete]
 func (h TodoHandler) DeleteTodo(c common.HContext) error {
+	user := c.Locals("user").(common.TokenUser)
 	id := c.Params("id")
 
-	err := h.serv.Delete(id, c.RequestId())
+	err := h.serv.Delete(user.UserId, id, c.RequestId())
 
 	if err != nil {
 		return common.ResponseError(c, err)

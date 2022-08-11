@@ -19,8 +19,8 @@ func Authorize(enforcer *casbin.Enforcer) common.HandleFunc {
 			return c.Next()
 		}
 
-		u := c.Locals("user").(jwt.MapClaims)
-		role := u["role"].(string)
+		claims := c.Locals("claims").(jwt.MapClaims)
+		role := claims["role"].(string)
 
 		ok, err := enforcer.Enforce(role, c.Path(), c.Method())
 

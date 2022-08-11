@@ -1,11 +1,11 @@
 version: '2.4'
 services:
   redis:
-    container_name: cache-dev
+    container_name: dev-cache
     ports:
       - 6379:6379
 
   db:
-    container_name: db-dev
+    container_name: dev-db
     ports:
       - 5433:5432

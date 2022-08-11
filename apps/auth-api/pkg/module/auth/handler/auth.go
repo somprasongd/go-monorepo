@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/somprasongd/go-monorepo/common"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/auth/core/dto"
@@ -14,6 +16,7 @@ type AuthHandler interface {
 	UpdateProfile(c common.HContext) error
 	RefreshToken(c common.HContext) error
 	RevokeToken(c common.HContext) error
+	VerifyToken(c common.HContext) error
 }
 
 type authHandler struct {
@@ -87,8 +90,8 @@ func (h authHandler) Login(c common.HContext) error {
 // @Success 200 {object} swagdto.Response{data=swagger.UserSampleData}
 // @Router /auth/profile [get]
 func (h authHandler) Profile(c common.HContext) error {
-	u := c.Locals("user").(jwt.MapClaims)
-	email := u["email"].(string)
+	claims := c.Locals("claims").(jwt.MapClaims)
+	email := claims["email"].(string)
 
 	user, err := h.serv.Profile(email, c.RequestId())
 
@@ -112,8 +115,8 @@ func (h authHandler) Profile(c common.HContext) error {
 // @Success 200 {object} swagdto.Response{data=swagger.UserSampleData}
 // @Router /users/{id} [patch]
 func (h authHandler) UpdateProfile(c common.HContext) error {
-	u := c.Locals("user").(jwt.MapClaims)
-	email := u["email"].(string)
+	claims := c.Locals("claims").(jwt.MapClaims)
+	email := claims["email"].(string)
 
 	form := dto.UpdateProfileForm{}
 
@@ -161,7 +164,6 @@ func (h authHandler) RefreshToken(c common.HContext) error {
 // @Description Remove token id in redis
 // @Tags Auth
 // @Accept  json
-// @Produce  json
 // @Param user body swagger.RefreshForm true "Refresh Token Data"
 // @Failure 401 {object} swagdto.Error401
 // @Failure 422 {object} swagdto.Error422{error=swagger.ErrLoginSampleData}
@@ -182,4 +184,19 @@ func (h authHandler) RevokeToken(c common.HContext) error {
 	}
 
 	return common.ResponseNoContent(c)
+}
+
+// @Summary Verify Access Token
+// @Description Verify Access Token and get user info from the token
+// @Tags Auth
+// @Accept  json
+// @Param user body swagger.RefreshForm true "Refresh Token Data"
+// @Failure 401 {object} swagdto.Error401
+// @Failure 422 {object} swagdto.Error422{error=swagger.ErrLoginSampleData}
+// @Failure 500 {object} swagdto.Error500
+// @Success 200
+// @Header 200 {string} X-Id-Token "id-token"
+// @Router /auth/verify [get]
+func (h authHandler) VerifyToken(c common.HContext) error {
+	return c.SendStatus(http.StatusOK)
 }

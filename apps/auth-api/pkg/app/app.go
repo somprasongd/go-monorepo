@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/somprasongd/go-monorepo/common"
 	log "github.com/somprasongd/go-monorepo/common/logger"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/app/database"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/app/middleware"
@@ -17,7 +18,6 @@ import (
 	"github.com/casbin/casbin/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 )
@@ -90,18 +90,11 @@ func (a *app) InitRouter(enforcer *casbin.Enforcer) {
 	r := fiber.New(cfg)
 	// Default middleware config
 	r.Use(cors.New())
-	r.Use(requestid.New())
-	r.Use(logger.New(logger.Config{
-		Format: "[${time}] ${locals:requestid} ${status} - ${latency} ${method} ${path}\n",
-	}))
 	r.Use(recover.New())
+	r.Use(requestid.New())
+	r.Use(util.WrapFiberHandler(common.LoggerMiddleware))
 
 	// authentication with exclude list
-	// excludeList := map[string][]string{
-	// 	"/api/v1/auth/register": {http.MethodPost},
-	// 	"/api/v1/auth/login":    {http.MethodPost},
-	// }
-	// r.Use(util.WrapFiberHandler(middleware.Authentication(a.Config.Token.SecretKey, excludeList)))
 	r.Use(util.WrapFiberHandler(middleware.AuthenticationCasbin(a.Config.Token.AccessSecretKey, enforcer)))
 	// authorization with casbin
 	r.Use(util.WrapFiberHandler(middleware.Authorize(enforcer)))

@@ -7,13 +7,14 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/somprasongd/go-monorepo/common"
 	log "github.com/somprasongd/go-monorepo/common/logger"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/app/database"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/config"
+	"github.com/somprasongd/go-monorepo/services/todo/pkg/util"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 )
@@ -74,11 +75,12 @@ func (a *app) InitRouter() {
 	r := fiber.New(cfg)
 	// Default middleware config
 	r.Use(cors.New())
-	r.Use(requestid.New())
-	r.Use(logger.New(logger.Config{
-		Format: "[${time}] ${locals:requestid} ${status} - ${latency} ${method} ${path}\n",
-	}))
 	r.Use(recover.New())
+	r.Use(requestid.New())
+	r.Use(util.WrapFiberHandler(common.LoggerMiddleware))
+
+	// decode id token from gateway to user
+	r.Use(util.WrapFiberHandler(common.DecodeUserMiddleware))
 
 	a.Router = r
 }

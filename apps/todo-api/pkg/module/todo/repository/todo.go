@@ -24,9 +24,11 @@ func (r todoRepositoryDB) Create(todo *model.Todo) error {
 	return r.db.Create(&todo).Error
 }
 
-func (r todoRepositoryDB) Find(page common.PagingRequest, filters dto.ListTodoFilter) (model.Todos, *common.PagingResult, error) {
+func (r todoRepositoryDB) Find(userId string, page common.PagingRequest, filters dto.ListTodoFilter) (model.Todos, *common.PagingResult, error) {
 	todos := []*model.Todo{}
 	db := r.db
+
+	db = db.Where(`user_id = ?`, userId)
 
 	if len(filters.Term) > 0 {
 		db = db.Where(`text ilike ?`,
@@ -53,9 +55,9 @@ func (r todoRepositoryDB) Find(page common.PagingRequest, filters dto.ListTodoFi
 	return todos, paging, nil
 }
 
-func (r todoRepositoryDB) FindById(id string) (*model.Todo, error) {
+func (r todoRepositoryDB) FindById(id string, userId string) (*model.Todo, error) {
 	todo := model.Todo{}
-	db := r.db.Where("id = ?", id).First(&todo)
+	db := r.db.Where("id = ? and user_id = ?", id, userId).First(&todo)
 	if err := db.Error; err != nil {
 		// handle error not found
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -66,7 +68,7 @@ func (r todoRepositoryDB) FindById(id string) (*model.Todo, error) {
 	return &todo, nil
 }
 
-func (r todoRepositoryDB) UpdateStatusById(id string, status bool) (*model.Todo, error) {
+func (r todoRepositoryDB) UpdateStatusById(id string, userId string, status bool) (*model.Todo, error) {
 	todo := model.Todo{}
 	if status {
 		todo.Done()
@@ -75,7 +77,7 @@ func (r todoRepositoryDB) UpdateStatusById(id string, status bool) (*model.Todo,
 	}
 	db := r.db.Model(&todo).
 		Clauses(clause.Returning{}).
-		Where("id = ?", id).
+		Where("id = ? and user_id = ?", id, userId).
 		Updates(&todo)
 	if err := db.Error; err != nil {
 		return nil, err
@@ -87,8 +89,8 @@ func (r todoRepositoryDB) UpdateStatusById(id string, status bool) (*model.Todo,
 	return &todo, nil
 }
 
-func (r todoRepositoryDB) DeleteById(id string) error {
-	db := r.db.Where("id = ?", id).Delete(&model.Todo{})
+func (r todoRepositoryDB) DeleteById(id string, userId string) error {
+	db := r.db.Where("id = ? and user_id = ?", id, userId).Delete(&model.Todo{})
 	if err := db.Error; err != nil {
 		return err
 	}

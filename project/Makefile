@@ -1,78 +1,53 @@
-SERVICE_NAME=monorepo
-SERVICE_IMAGE=somprasongd/monorepo
-SERVICE_VERSION=1.0.0
+APP_NAME=go-monorepo
+SERVICE_AUTH_IMAGE=somprasongd/go-monorepo/auth
+SERVICE_AUTH_VERSION=0.0.1
+SERVICE_TODO_IMAGE=somprasongd/go-monorepo/todo
+SERVICE_TODO_VERSION=0.0.1
 
-export SERVICE_NAME
-export SERVICE_IMAGE
-export SERVICE_VERSION
-
-doc:
-	@echo "---Generate doc files $(SERVICE_NAME)---"
-	swag init -g pkg/module/module.go -o pkg/docs
+export APP_NAME
+export SERVICE_AUTH_IMAGE
+export SERVICE_AUTH_VERSION
+export SERVICE_TODO_IMAGE
+export SERVICE_TODO_VERSION
 
 dev-up:
-	@echo "---Start Dev $(SERVICE_NAME) Environtment---"
-	docker-compose -p monorepo-dev -f docker-compose.yml -f docker-compose.dev.yml up -d
+	@echo "---Start Dev $(APP_NAME) Environtment---"
+	docker-compose -p monorepo-dev -f ./deploy/docker-compose.yml -f ./deploy/docker-compose.dev.yml up -d
 
 dev-down:
-	@echo "---Stop Dev $(SERVICE_NAME) Environtment---"
-	docker-compose -p monorepo-dev -f docker-compose.yml -f docker-compose.dev.yml down
+	@echo "---Stop Dev $(APP_NAME) Environtment---"
+	docker-compose -p monorepo-dev -f ./deploy/docker-compose.yml -f ./deploy/docker-compose.dev.yml down
 
 dev-down-v:
-	@echo "---Stop Dev $(SERVICE_NAME) Environtment---"
-	docker-compose -p monorepo-dev -f docker-compose.yml -f docker-compose.dev.yml down -v
+	@echo "---Stop Dev $(APP_NAME) Environtment---"
+	docker-compose -p monorepo-dev -f ./deploy/docker-compose.yml -f ./deploy/docker-compose.dev.yml down -v
 
-dev:
-	@echo "---Start Dev $(SERVICE_NAME)---"
-	go run cmd/api/main.go
+build-auth:
+	@echo "---Build $(APP_NAME) $(SERVICE_AUTH_IMAGE):$(SERVICE_AUTH_VERSION)---"
+	docker build -t $(SERVICE_AUTH_IMAGE):$(SERVICE_AUTH_VERSION) -f ../apps/auth-api/Dockerfile .
 
-d-build:
-	@echo "---Build $(SERVICE_NAME) $(SERVICE_IMAGE):$(SERVICE_VERSION)---"
-	docker build -t $(SERVICE_IMAGE):$(SERVICE_VERSION) -f deploy/Dockerfile .
+# build with debug
+build-auth-d:
+	@echo "---Build $(APP_NAME) $(SERVICE_AUTH_IMAGE):$(SERVICE_AUTH_VERSION)---"
+	docker build --progress plain -t $(SERVICE_AUTH_IMAGE):$(SERVICE_AUTH_VERSION) -f ../apps/auth-api/Dockerfile .
 
-d-build-debug:
-	@echo "---Build $(SERVICE_NAME) $(SERVICE_IMAGE):$(SERVICE_VERSION)---"
-	docker build --progress plain -t $(SERVICE_IMAGE):$(SERVICE_VERSION) -f deploy/Dockerfile .
+build-todo:
+	@echo "---Build $(APP_NAME) $(SERVICE_TODO_IMAGE):$(SERVICE_TODO_VERSION)---"
+	docker build -t $(SERVICE_TODO_IMAGE):$(SERVICE_TODO_VERSION) -f ../apps/todo-api/Dockerfile .
+
+# build with debug
+build-todo-d:
+	@echo "---Build $(APP_NAME) $(SERVICE_TODO_IMAGE):$(SERVICE_TODO_VERSION)---"
+	docker build --progress plain -t $(SERVICE_TODO_IMAGE):$(SERVICE_TODO_VERSION) -f ../apps/todo-api/Dockerfile .
 
 prod-up:
-	@echo "---Start Prod $(SERVICE_NAME)---"
-	docker-compose -p task-api-prod -f docker-compose.yml -f docker-compose.prod.yml up -d
+	@echo "---Start Prod $(APP_NAME)---"
+	docker-compose -p task-api-prod -f ./deploy/docker-compose.yml -f ./deploy/docker-compose.prod.yml up -d
 
 prod-down:
-	@echo "---Stop Prod $(SERVICE_NAME)---"
-	docker-compose -p task-api-prod -f docker-compose.yml -f docker-compose.prod.yml down
+	@echo "---Stop Prod $(APP_NAME)---"
+	docker-compose -p task-api-prod -f ./deploy/docker-compose.yml -f ./deploy/docker-compose.prod.yml down
 
 prod-down-v:
-	@echo "---Stop Prod $(SERVICE_NAME)---"
-	docker-compose -p task-api-prod -f docker-compose.yml -f docker-compose.prod.yml down -v
-
-test-handler:
-	@echo "---Start test auth handler---"
-	go test -v github.com/somprasongd/go-monorepo/services/auth/pkg/module/auth/handler
-
-test-service:
-	@echo "---Start test auth service---"
-	go test -v github.com/somprasongd/go-monorepo/services/auth/pkg/module/auth/core/service
-
-test-all:
-	@echo "---Start test all module---"
-	go test -v github.com/somprasongd/go-monorepo/services/auth/pkg/module/...
-
-migrate-create:
-	@echo "---Creating migration files---"
-	go run cmd/migrate/main.go create $(NAME) sql
-
-migrate-up:
-	go run cmd/migrate/main.go up
-
-migrate-down:
-	go run cmd/migrate/main.go down
-
-migrate-force:
-	go run cmd/migrate/main.go force $(VERSION)
-
-migrate-status:
-	go run cmd/migrate/main.go status
-
-migrate-version:
-	go run cmd/migrate/main.go version
+	@echo "---Stop Prod $(APP_NAME)---"
+	docker-compose -p task-api-prod -f ./deploy/docker-compose.yml -f ./deploy/docker-compose.prod.yml down -v

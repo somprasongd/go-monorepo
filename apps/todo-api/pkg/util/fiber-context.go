@@ -31,6 +31,14 @@ func (c *fiberContext) RequestId() string {
 	return c.Ctx.GetRespHeader("X-Request-ID")
 }
 
+func (c *fiberContext) IP() string {
+	return c.Ctx.IP()
+}
+
+func (c *fiberContext) Port() string {
+	return c.Ctx.Port()
+}
+
 func (c *fiberContext) Method() string {
 	return c.Ctx.Method()
 }
@@ -70,6 +78,10 @@ func (c *fiberContext) SendStatus(code int) error {
 func (c *fiberContext) SendJSON(code int, data interface{}) error {
 	c.Ctx.Status(code)
 	return c.Ctx.JSON(data)
+}
+
+func (c *fiberContext) StatusCode() int {
+	return c.Ctx.Response().StatusCode()
 }
 
 func WrapFiberHandler(h common.HandleFunc) func(c *fiber.Ctx) error {

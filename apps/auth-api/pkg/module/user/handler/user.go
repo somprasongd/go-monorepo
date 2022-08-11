@@ -19,6 +19,7 @@ func NewUserHandler(serv ports.UserService) *UserHandler {
 // @Tags User
 // @Accept  json
 // @Produce  json
+// @Param Authorization header string true "Bearer"
 // @Param user body swagger.CreateUserFrom true "User Data"
 // @Failure 422 {object} swagdto.Error422{error=swagger.ErrCreateSampleData}
 // @Failure 500 {object} swagdto.Error500
@@ -46,6 +47,7 @@ func (h UserHandler) CreateUser(c common.HContext) error {
 // @Tags User
 // @Accept  json
 // @Produce  json
+// @Param Authorization header string true "Bearer"
 // @Param page query int false "Go to a specific page number. Start with 1"
 // @Param limit query int false "Page size for the data"
 // @Param order query string false "Page order. Eg: text desc,createdAt desc"
@@ -69,6 +71,7 @@ func (h UserHandler) ListUser(c common.HContext) error {
 // @Description Get a specific user by id
 // @Produce json
 // @Tags User
+// @Param Authorization header string true "Bearer"
 // @Param id path string true "User ID"
 // @Failure 400 {object} swagdto.Error400
 // @Failure 404 {object} swagdto.Error404
@@ -91,6 +94,7 @@ func (h UserHandler) GetUser(c common.HContext) error {
 // @Description Update a specific user password by id
 // @Produce json
 // @Tags User
+// @Param Authorization header string true "Bearer"
 // @Param id path string true "User ID"
 // @Param user body swagger.UpdateUserPasswordForm true "User Password"
 // @Failure 400 {object} swagdto.Error400
@@ -121,6 +125,7 @@ func (h UserHandler) UpdateUserPassword(c common.HContext) error {
 // @Description Delete a specific user by id
 // @Produce  json
 // @Tags User
+// @Param Authorization header string true "Bearer"
 // @Param id path string true "User ID"
 // @Failure 400 {object} swagdto.Error400
 // @Failure 404 {object} swagdto.Error404

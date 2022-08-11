@@ -1,4 +1,5 @@
 p, (admin)|(user), /api/v1/auth/profile, GET
+p, (admin)|(user), /api/v1/auth/verify, GET
 p, admin, /api/v1/users, (GET)|(POST)
 p, admin, /api/v1/users/*, (GET)|(PATCH)|(DELETE)
 

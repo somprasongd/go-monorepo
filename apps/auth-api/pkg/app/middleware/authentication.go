@@ -50,7 +50,7 @@ func Authentication(secretKey string, excludeList map[string][]string) common.Ha
 				return common.ResponseError(c, ErrInvalidToken)
 			}
 
-			c.Locals("user", claims)
+			c.Locals("claims", claims)
 		}
 
 		c.Locals("public", public)
@@ -98,7 +98,7 @@ func AuthenticationCasbin(secretKey string, enforcer *casbin.Enforcer) common.Ha
 				return common.ResponseError(c, ErrInvalidToken)
 			}
 
-			c.Locals("user", claims)
+			c.Locals("claims", claims)
 		}
 
 		c.Locals("public", public)

@@ -13,7 +13,7 @@ server:
 db:
   driver: 'postgres'
   host: 'localhost'
-  port: 5434
+  port: 5433
   username: 'postgres'
   password: 'S3cretp@ssw0rd'
   database: 'todos'

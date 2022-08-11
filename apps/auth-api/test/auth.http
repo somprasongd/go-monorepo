@@ -1,6 +1,6 @@
 @host=http://localhost:8080
 
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsInN1YiI6ImY4NjE5MzZjLTA2MmYtNGU0OS04MmE4LTA4ZjM5YWJlZGRhOSIsImlhdCI6MTY1OTUyMDU5MH0.NHT8oZXrrQOVXUCepiNCfajRKE3brkqamT3eUk2MawA
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAbWFpbC5jb20iLCJleHAiOjE2NjAyMDcxNTgsImlhdCI6MTY2MDIwNjg1OCwicm9sZSI6InVzZXIiLCJzdWIiOiIyNDhiYTNhMS0wM2EzLTQ2YTAtYmJlOS04ZDIzNTkyY2E4MTEiLCJ1c2VyX2lkIjoiNjk4YmM2OWMtMGFiMS00YzQyLWFhODctMTY0MWY3MTY3YjQ2In0.UU1urmjXf2swc9rb-OdVeaUJNcoTNqHJo0YA5EmllFY
 
 
 ### register
@@ -17,8 +17,8 @@ POST {{host}}/api/v1/auth/login
 Content-Type: application/json
 
 {
-  "email": "admin@mail.com",
-  "password": "admin"
+  "email": "user@mail.com",
+  "password": "user"
 }
 
 ### profile
@@ -34,3 +34,7 @@ Content-Type: application/json
   "password_old": "1234",
   "password_new": "user"
 }
+
+### verify
+GET  {{host}}/api/v1/auth/verify
+Authorization: Bearer {{token}}
