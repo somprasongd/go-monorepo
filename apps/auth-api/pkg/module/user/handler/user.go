@@ -76,7 +76,7 @@ func (h UserHandler) ListUser(c common.HContext) error {
 // @Success 200 {object} swagdto.Response{data=swagger.UserSampleData}
 // @Router /users/{id} [get]
 func (h UserHandler) GetUser(c common.HContext) error {
-	id := c.Param("id")
+	id := c.Params("id")
 
 	user, err := h.serv.Get(id, c.RequestId())
 
@@ -100,7 +100,7 @@ func (h UserHandler) GetUser(c common.HContext) error {
 // @Success 200 {object} swagdto.Response{data=swagger.UserSampleData}
 // @Router /users/{id} [patch]
 func (h UserHandler) UpdateUserPassword(c common.HContext) error {
-	id := c.Param("id")
+	id := c.Params("id")
 
 	form := dto.UpdateUserPasswordForm{}
 
@@ -128,7 +128,7 @@ func (h UserHandler) UpdateUserPassword(c common.HContext) error {
 // @Success 204
 // @Router /users/{id} [delete]
 func (h UserHandler) DeleteUser(c common.HContext) error {
-	id := c.Param("id")
+	id := c.Params("id")
 
 	err := h.serv.Delete(id, c.RequestId())
 

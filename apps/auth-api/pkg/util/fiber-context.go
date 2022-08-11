@@ -15,6 +15,22 @@ func newFiberContext(c *fiber.Ctx) common.HContext {
 	}
 }
 
+func (c *fiberContext) Get(key string, defaultValue ...string) string {
+	return c.Ctx.Get(key, defaultValue...)
+}
+
+func (c *fiberContext) Set(key string, value string) {
+	c.Ctx.Set(key, value)
+}
+
+func (c *fiberContext) Authorization() string {
+	return c.Get("Authorization")
+}
+
+func (c *fiberContext) RequestId() string {
+	return c.Ctx.GetRespHeader("X-Request-ID")
+}
+
 func (c *fiberContext) Method() string {
 	return c.Ctx.Method()
 }
@@ -31,29 +47,12 @@ func (c *fiberContext) QueryParser(v interface{}) error {
 	return c.Ctx.QueryParser(v)
 }
 
-func (c *fiberContext) Query(key string) (string, bool) {
-	q := c.Ctx.Query(key)
-	return q, true
+func (c *fiberContext) Query(key string, defaultValue ...string) string {
+	return c.Ctx.Query(key, defaultValue...)
 }
 
-func (c *fiberContext) DefaultQuery(key string, d string) string {
-	return c.Ctx.Query(key, d)
-}
-
-func (c *fiberContext) Param(key string) string {
-	return c.Ctx.Params(key)
-}
-
-func (c *fiberContext) Header(key string) string {
-	return c.Ctx.Get(key)
-}
-
-func (c *fiberContext) Authorization() string {
-	return c.Header("Authorization")
-}
-
-func (c *fiberContext) RequestId() string {
-	return c.GetRespHeader("X-Request-ID")
+func (c *fiberContext) Params(key string, defaultValue ...string) string {
+	return c.Ctx.Params(key, defaultValue...)
 }
 
 func (c *fiberContext) Locals(key string, value ...interface{}) interface{} {

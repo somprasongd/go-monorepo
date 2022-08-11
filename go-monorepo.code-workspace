@@ -1,13 +1,13 @@
 {
 	"folders": [
 		{
-			"path": "apps\\auth-api"
+			"path": "apps/auth-api"
 		},
 		{
-			"path": "apps\\todo-api"
+			"path": "apps/todo-api"
 		},
 		{
-			"path": "libs\\common"
+			"path": "libs/common"
 		},
 		{
 			"path": "project"
