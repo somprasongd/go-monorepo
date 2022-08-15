@@ -1,0 +1,67 @@
+@host=http://localhost:8080
+
+@refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjI4MTkxMzEsImlhdCI6MTY2MDIyNzEzMSwic3ViIjoiODY3NGVmMTgtZjdmNS00NjMxLTgxNzgtNDI5YzJkMGQ5ODc4In0.z_VhBWi82XtUn9AcW60lUd_SU32cdad0LC2blmjUGxw
+
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQG1haWwuY29tIiwiZXhwIjoxNjYwMjI2OTY4LCJpYXQiOjE2NjAyMjY2NjgsInJvbGUiOiJhZG1pbiIsInN1YiI6ImNjNjhhZDkzLWQ5Y2QtNGNjNC04NWM4LTBhMzg5YmRjYjRjMSIsInVzZXJfaWQiOiIwMzAzZmYxYy01MzAwLTQ2MWQtYTY4YS0zNWQwYTQ3YzI5NzIifQ.Q7lkcuaSHCw5GsfvpMq7xZ2PDTJO-1CNouxSrN2q3hg
+
+
+### register
+POST {{host}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@mail.com",
+  "password": "user"
+}
+
+### login
+POST {{host}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@mail.com",
+  "password": "user"
+}
+
+### login admin
+POST {{host}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@mail.com",
+  "password": "admin"
+}
+
+### profile
+GET {{host}}/api/v1/auth/profile
+Authorization: Bearer {{token}}
+
+### update profile
+PATCH  {{host}}/api/v1/auth/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "password_old": "user",
+  "password_new": "user"
+}
+
+### verify
+GET  {{host}}/api/v1/auth/verify
+Authorization: Bearer {{token}}
+
+### refresh
+POST  {{host}}/api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refresh_token": "{{refreshToken}}"
+}
+
+### revoke
+POST  {{host}}/api/v1/auth/revoke
+Content-Type: application/json
+
+{
+  "refresh_token": "{{refreshToken}}"
+}

@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "apps/auth-api"
+		},
+		{
+			"path": "apps/todo-api"
+		},
+		{
+			"path": "libs/common"
+		},
+		{
+			"path": "project"
+		}
+	],
+	"settings": {
+		"makefile.extensionOutputFolder": "./.vscode"
+	}
+}
