@@ -55,14 +55,13 @@ func PublicRouteMiddleware(publicList ...PublicRoute) common.HandleFunc {
 
 func PublicRouteMiddlewareCasbin(enforcer *casbin.Enforcer, suffix string) common.HandleFunc {
 	return func(c common.HContext) error {
-		log := c.Locals("log").(logger.Interface)
-
 		public := false
 
 		enforceContext := casbin.NewEnforceContext(suffix)
 
 		public, err := enforcer.Enforce(enforceContext, c.Path(), c.Method())
 		if err != nil {
+			log := c.Locals("log").(logger.Interface)
 			log.Error(err.Error())
 			return common.ResponseError(c, ErrEnforce)
 		}
