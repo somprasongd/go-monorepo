@@ -42,7 +42,7 @@ func (c *fiberContext) ClientIP() string {
 func (c *fiberContext) Domain() string {
 	domain := c.Get("X-Forwarded-Host")
 	if len(domain) == 0 {
-		domain = c.Ctx.IP()
+		domain = c.Ctx.Hostname()
 	}
 	return domain
 }

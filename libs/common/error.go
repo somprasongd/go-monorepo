@@ -24,7 +24,7 @@ var (
 	ErrDbUpdate = NewUnexpectedError("database update error")
 	// ErrDbDelete error when delete data from database
 	ErrDbDelete        = NewUnexpectedError("database delete error")
-	ErrNotAllowIdToken = NewBadRequestError("header X-Id-Token not allow")
+	ErrNotAllowIdToken = NewUnauthorizedError("header X-Id-Token not allow")
 	ErrNoIdToken       = NewUnauthorizedError("no id token")
 	ErrInvalidIdToken  = NewUnauthorizedError("invalid id token")
 )
