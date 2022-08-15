@@ -3,11 +3,11 @@ package user
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/app"
+	"github.com/somprasongd/go-monorepo/services/auth/pkg/app/context"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/user/core/ports"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/user/core/service"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/user/handler"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/user/repository"
-	"github.com/somprasongd/go-monorepo/services/auth/pkg/util"
 )
 
 type RouteConfig struct {
@@ -35,9 +35,9 @@ func SetupRoutes(cfg RouteConfig) {
 
 	userss := cfg.Router.Group(cfg.BaseURL + "/users")
 
-	userss.Post("", util.WrapFiberHandler(h.CreateUser))
-	userss.Get("", util.WrapFiberHandler(h.ListUser))
-	userss.Get("/:id", util.WrapFiberHandler(h.GetUser))
-	userss.Patch("/:id", util.WrapFiberHandler(h.UpdateUserPassword))
-	userss.Delete("/:id", util.WrapFiberHandler(h.DeleteUser))
+	userss.Post("", context.WrapFiberHandler(h.CreateUser))
+	userss.Get("", context.WrapFiberHandler(h.ListUser))
+	userss.Get("/:id", context.WrapFiberHandler(h.GetUser))
+	userss.Patch("/:id", context.WrapFiberHandler(h.UpdateUserPassword))
+	userss.Delete("/:id", context.WrapFiberHandler(h.DeleteUser))
 }

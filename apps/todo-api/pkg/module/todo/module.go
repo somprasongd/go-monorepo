@@ -3,11 +3,11 @@ package todo
 import (
 	_ "github.com/somprasongd/go-monorepo/common/swagdto"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/app"
+	"github.com/somprasongd/go-monorepo/services/todo/pkg/app/context"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/module/todo/core/ports"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/module/todo/core/service"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/module/todo/handler"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/module/todo/repository"
-	"github.com/somprasongd/go-monorepo/services/todo/pkg/util"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -34,11 +34,11 @@ func Init(ctx *app.Context) {
 
 	// todos := ctx.Router.Group(ctx.Config.App.BaseUrl + "/todos")
 
-	// todos.Post("", util.WrapFiberHandler(h.CreateTodo))
-	// todos.Get("", util.WrapFiberHandler(h.ListTodo))
-	// todos.Get("/:id", util.WrapFiberHandler(h.GetTodo))
-	// todos.Patch("/:id", util.WrapFiberHandler(h.UpdateTodoStatus))
-	// todos.Delete("/:id", util.WrapFiberHandler(h.DeleteTodo))
+	// todos.Post("", context.WrapFiberHandler(h.CreateTodo))
+	// todos.Get("", context.WrapFiberHandler(h.ListTodo))
+	// todos.Get("/:id", context.WrapFiberHandler(h.GetTodo))
+	// todos.Patch("/:id", context.WrapFiberHandler(h.UpdateTodoStatus))
+	// todos.Delete("/:id", context.WrapFiberHandler(h.DeleteTodo))
 }
 
 func SetupRoutes(cfg RouteConfig) {
@@ -46,9 +46,9 @@ func SetupRoutes(cfg RouteConfig) {
 
 	todos := cfg.Router.Group(cfg.BaseURL + "/todos")
 
-	todos.Post("", util.WrapFiberHandler(h.CreateTodo))
-	todos.Get("", util.WrapFiberHandler(h.ListTodo))
-	todos.Get("/:id", util.WrapFiberHandler(h.GetTodo))
-	todos.Patch("/:id", util.WrapFiberHandler(h.UpdateTodoStatus))
-	todos.Delete("/:id", util.WrapFiberHandler(h.DeleteTodo))
+	todos.Post("", context.WrapFiberHandler(h.CreateTodo))
+	todos.Get("", context.WrapFiberHandler(h.ListTodo))
+	todos.Get("/:id", context.WrapFiberHandler(h.GetTodo))
+	todos.Patch("/:id", context.WrapFiberHandler(h.UpdateTodoStatus))
+	todos.Delete("/:id", context.WrapFiberHandler(h.DeleteTodo))
 }

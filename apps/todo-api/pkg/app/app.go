@@ -9,9 +9,9 @@ import (
 
 	log "github.com/somprasongd/go-monorepo/common/logger"
 	"github.com/somprasongd/go-monorepo/common/middleware"
+	"github.com/somprasongd/go-monorepo/services/todo/pkg/app/context"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/app/database"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/config"
-	"github.com/somprasongd/go-monorepo/services/todo/pkg/util"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -77,10 +77,10 @@ func (a *app) InitRouter() {
 	r.Use(cors.New())
 	r.Use(recover.New())
 	r.Use(requestid.New())
-	r.Use(util.WrapFiberHandler(middleware.LoggerMiddleware))
-	r.Use(util.WrapFiberHandler(middleware.PublicRouteMiddleware()))
+	r.Use(context.WrapFiberHandler(middleware.LoggerMiddleware))
+	r.Use(context.WrapFiberHandler(middleware.PublicRouteMiddleware()))
 	// decode id token from gateway to user
-	r.Use(util.WrapFiberHandler(middleware.DecodeUserMiddleware))
+	r.Use(context.WrapFiberHandler(middleware.DecodeUserMiddleware))
 
 	a.Router = r
 }

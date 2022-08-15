@@ -9,10 +9,10 @@ import (
 
 	log "github.com/somprasongd/go-monorepo/common/logger"
 	cmiddleware "github.com/somprasongd/go-monorepo/common/middleware"
+	"github.com/somprasongd/go-monorepo/services/auth/pkg/app/context"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/app/database"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/app/middleware"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/config"
-	"github.com/somprasongd/go-monorepo/services/auth/pkg/util"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/util/cache"
 
 	"github.com/casbin/casbin/v2"
@@ -92,12 +92,12 @@ func (a *app) InitRouter(enforcer *casbin.Enforcer) {
 	r.Use(cors.New())
 	r.Use(recover.New())
 	r.Use(requestid.New())
-	r.Use(util.WrapFiberHandler(cmiddleware.LoggerMiddleware))
-	r.Use(util.WrapFiberHandler(cmiddleware.PublicRouteMiddlewareCasbin(enforcer, "2")))
+	r.Use(context.WrapFiberHandler(cmiddleware.LoggerMiddleware))
+	r.Use(context.WrapFiberHandler(cmiddleware.PublicRouteMiddlewareCasbin(enforcer, "2")))
 	// authentication
-	r.Use(util.WrapFiberHandler(middleware.Authentication(a.Config.Token.AccessSecretKey)))
+	r.Use(context.WrapFiberHandler(middleware.Authentication(a.Config.Token.AccessSecretKey)))
 	// authorization with casbin
-	r.Use(util.WrapFiberHandler(middleware.Authorize(enforcer)))
+	r.Use(context.WrapFiberHandler(middleware.Authorize(enforcer)))
 
 	a.Router = r
 }

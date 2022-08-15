@@ -3,11 +3,11 @@ package auth
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/app"
+	"github.com/somprasongd/go-monorepo/services/auth/pkg/app/context"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/auth/core/ports"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/auth/core/service"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/auth/handler"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/auth/repository"
-	"github.com/somprasongd/go-monorepo/services/auth/pkg/util"
 
 	"github.com/somprasongd/go-monorepo/common/middleware"
 	_ "github.com/somprasongd/go-monorepo/common/swagdto"
@@ -39,13 +39,13 @@ func SetupRoutes(cfg RouteConfig) {
 
 	auth := cfg.Router.Group(cfg.BaseURL + "/auth")
 
-	auth.Post("/register", util.WrapFiberHandler(h.Register))
-	auth.Post("/login", util.WrapFiberHandler(h.Login))
+	auth.Post("/register", context.WrapFiberHandler(h.Register))
+	auth.Post("/login", context.WrapFiberHandler(h.Login))
 
-	auth.Get("/profile", util.WrapFiberHandler(h.Profile))
-	auth.Patch("/profile", util.WrapFiberHandler(h.UpdateProfile))
+	auth.Get("/profile", context.WrapFiberHandler(h.Profile))
+	auth.Patch("/profile", context.WrapFiberHandler(h.UpdateProfile))
 
-	auth.Post("/refresh", util.WrapFiberHandler(h.RefreshToken))
-	auth.Post("/revoke", util.WrapFiberHandler(h.RevokeToken))
-	auth.Get("/verify", util.WrapFiberHandler(middleware.EncodeUserMiddleware), util.WrapFiberHandler(h.VerifyToken))
+	auth.Post("/refresh", context.WrapFiberHandler(h.RefreshToken))
+	auth.Post("/revoke", context.WrapFiberHandler(h.RevokeToken))
+	auth.Get("/verify", context.WrapFiberHandler(middleware.EncodeUserMiddleware), context.WrapFiberHandler(h.VerifyToken))
 }
