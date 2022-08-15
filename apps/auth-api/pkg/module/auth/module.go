@@ -2,13 +2,15 @@ package auth
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/somprasongd/go-monorepo/common"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/app"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/auth/core/ports"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/auth/core/service"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/auth/handler"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/module/auth/repository"
 	"github.com/somprasongd/go-monorepo/services/auth/pkg/util"
+
+	"github.com/somprasongd/go-monorepo/common/middleware"
+	_ "github.com/somprasongd/go-monorepo/common/swagdto"
 )
 
 type RouteConfig struct {
@@ -45,5 +47,5 @@ func SetupRoutes(cfg RouteConfig) {
 
 	auth.Post("/refresh", util.WrapFiberHandler(h.RefreshToken))
 	auth.Post("/revoke", util.WrapFiberHandler(h.RevokeToken))
-	auth.Get("/verify", util.WrapFiberHandler(common.EncodeUserMiddleware), util.WrapFiberHandler(h.VerifyToken))
+	auth.Get("/verify", util.WrapFiberHandler(middleware.EncodeUserMiddleware), util.WrapFiberHandler(h.VerifyToken))
 }

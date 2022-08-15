@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/somprasongd/go-monorepo/common"
 	log "github.com/somprasongd/go-monorepo/common/logger"
+	"github.com/somprasongd/go-monorepo/common/middleware"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/app/database"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/config"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/util"
@@ -77,10 +77,10 @@ func (a *app) InitRouter() {
 	r.Use(cors.New())
 	r.Use(recover.New())
 	r.Use(requestid.New())
-	r.Use(util.WrapFiberHandler(common.LoggerMiddleware))
-
+	r.Use(util.WrapFiberHandler(middleware.LoggerMiddleware))
+	r.Use(util.WrapFiberHandler(middleware.PublicRouteMiddleware()))
 	// decode id token from gateway to user
-	r.Use(util.WrapFiberHandler(common.DecodeUserMiddleware))
+	r.Use(util.WrapFiberHandler(middleware.DecodeUserMiddleware))
 
 	a.Router = r
 }

@@ -8,7 +8,7 @@ export SERVICE_VERSION
 
 doc:
 	@echo "---Generate doc files $(SERVICE_NAME)---"
-	swag init -g pkg/module/module.go -o pkg/docs
+	swag init --parseDependency -g pkg/module/module.go -o pkg/docs
 
 dev-up:
 	@echo "---Start Dev $(SERVICE_NAME) Environtment---"

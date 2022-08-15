@@ -1,6 +1,7 @@
 package todo
 
 import (
+	_ "github.com/somprasongd/go-monorepo/common/swagdto"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/app"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/module/todo/core/ports"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/module/todo/core/service"

@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/somprasongd/go-monorepo/common"
 	"github.com/somprasongd/go-monorepo/common/logger"
+	"github.com/somprasongd/go-monorepo/common/middleware"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/module/todo/core/dto"
 	"github.com/somprasongd/go-monorepo/services/todo/pkg/module/todo/core/ports"
 )
@@ -27,7 +28,7 @@ func NewTodoHandler(serv ports.TodoService) *TodoHandler {
 // @Router /todos [post]
 func (h TodoHandler) CreateTodo(c common.HContext) error {
 	log := c.Locals("log").(logger.Interface)
-	user := c.Locals("user").(common.TokenUser)
+	user := c.Locals("user").(middleware.TokenUser)
 	// แปลง JSON เป็น struct
 	form := new(dto.NewTodoForm)
 	if err := c.BodyParser(form); err != nil {
@@ -60,7 +61,7 @@ func (h TodoHandler) CreateTodo(c common.HContext) error {
 // @Router /todos [get]
 func (h TodoHandler) ListTodo(c common.HContext) error {
 	log := c.Locals("log").(logger.Interface)
-	user := c.Locals("user").(common.TokenUser)
+	user := c.Locals("user").(middleware.TokenUser)
 	filters := dto.ListTodoFilter{}
 	if err := c.QueryParser(&filters); err != nil {
 		return common.ResponseError(c, common.ErrQueryParser)
@@ -89,7 +90,7 @@ func (h TodoHandler) ListTodo(c common.HContext) error {
 // @Router /todos/{id} [get]
 func (h TodoHandler) GetTodo(c common.HContext) error {
 	log := c.Locals("log").(logger.Interface)
-	user := c.Locals("user").(common.TokenUser)
+	user := c.Locals("user").(middleware.TokenUser)
 	id := c.Params("id")
 
 	todo, err := h.serv.Get(user.UserId, id, log)
@@ -115,7 +116,7 @@ func (h TodoHandler) GetTodo(c common.HContext) error {
 // @Router /todos/{id} [patch]
 func (h TodoHandler) UpdateTodoStatus(c common.HContext) error {
 	log := c.Locals("log").(logger.Interface)
-	user := c.Locals("user").(common.TokenUser)
+	user := c.Locals("user").(middleware.TokenUser)
 	id := c.Params("id")
 
 	form := dto.UpdateTodoForm{}
@@ -145,7 +146,7 @@ func (h TodoHandler) UpdateTodoStatus(c common.HContext) error {
 // @Router /todos/{id} [delete]
 func (h TodoHandler) DeleteTodo(c common.HContext) error {
 	log := c.Locals("log").(logger.Interface)
-	user := c.Locals("user").(common.TokenUser)
+	user := c.Locals("user").(middleware.TokenUser)
 	id := c.Params("id")
 
 	err := h.serv.Delete(user.UserId, id, log)
