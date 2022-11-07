@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"fmt"
+	"net/http"
 	"os"
 	"time"
 
@@ -35,13 +37,30 @@ func LoggerMiddleware(c common.HContext) error {
 
 	err := c.Next()
 
-	// "status - method path (latency)"
-	// msg := fmt.Sprintf("%v - %v %v (%v)", c.StatusCode(), c.Method(), c.Path(), time.Since(start))
+	status := c.StatusCode()
+	if err != nil {
+		status = http.StatusInternalServerError
+		fileds["error"] = err.Error()
+	}
+
+	// if err != nil {
+	// 	switch e := err.(type) {
+	// 	case *fiber.Error:
+	// 		status = e.Code
+	// 	default: // case error
+	// 		status = fiber.StatusInternalServerError
+	// 	}
+
+	// 	fileds["error"] = err.Error()
+	// 	log.Error(err.Error())
+	// }
 
 	fileds["status"] = c.StatusCode()
 	fileds["latency"] = time.Since(start)
 
-	logger.New(logger.ToFields(fileds)...).Info("")
+	msg := fmt.Sprintf("%d - %s %s", status, c.Method(), c.Path())
+
+	logger.New(logger.ToFields(fileds)...).Info(msg)
 
 	return err
 }
